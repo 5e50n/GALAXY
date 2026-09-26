@@ -50,7 +50,7 @@ docs/                      Hackathon briefs + UI snippets
 ## Run
 ```bash
 npm install
-npm run dev          # http://localhost:3000/ORBIT/
+npm run dev          # http://localhost:5173/GALAXY/  ·  live: https://5e50n.github.io/GALAXY/
 ```
 Retrain the model: see [ml/README.md](ml/README.md).
 

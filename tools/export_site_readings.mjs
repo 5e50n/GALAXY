@@ -2,8 +2,8 @@
 // The numbers come from the site's own modules running in a real browser, so they are
 // exactly what a visitor sees (same model, same NASA data, same astronomy).
 //
-//   npm run dev                      # site on http://localhost:5173/ORBIT/
-//   node tools/export_site_readings.mjs [http://localhost:5173/ORBIT/]
+//   npm run dev                      # site on http://localhost:5173/GALAXY/
+//   node tools/export_site_readings.mjs [http://localhost:5173/GALAXY/]
 //
 // Needs Google Chrome (path below) and internet (NASA GIBS tiles, Open-Meteo).
 
@@ -12,7 +12,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import puppeteer from 'puppeteer-core';
 
-const SITE = process.argv[2] || 'http://localhost:5173/ORBIT/';
+const SITE = process.argv[2] || 'http://localhost:5173/GALAXY/';
 const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const OUT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'reports', 'site_readings');
 
