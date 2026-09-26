@@ -19,6 +19,8 @@ An AI trained on real ground measurements corrects what NASA satellites miss abo
 
 Inside Iraq the site uses **model v2** (NASA Black Marble VNP46A4 2024 calibrated radiance): on the same rows MAE 0.556 → **0.542**, Bortle ±1 **87%**, and agreement with Middle-East observers (Spearman) 0.20 → **0.38**. See [reports/v1_vs_v2.json](reports/v1_vs_v2.json) and [reports/feasibility_study.md](reports/feasibility_study.md).
 
+**Presentation:** [docs/GALAXY-presentation.pdf](docs/GALAXY-presentation.pdf) · **Live site:** https://5e50n.github.io/GALAXY/
+
 Full report with figures and tables: [reports/README.md](reports/README.md) · How to train: [ml/README.md](ml/README.md)
 
 ## Layout
