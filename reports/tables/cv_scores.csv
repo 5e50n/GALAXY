@@ -1,0 +1,4 @@
+,MAE,RMSE,R2
+satellite_only,0.814,1.085,0.476
+random_forest,0.621,0.892,0.646
+orbit_ai,0.605,0.911,0.63

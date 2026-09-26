@@ -1,0 +1,3 @@
+file,site,local_datetime,local_time,utc_offset,lat,lon,elevation_m,exposure_s,iso,f_number,cloud,sqm_measured,notes
+IMG_0001.jpg,Mosul University,2026-09-20 22:30:00,,3,36.3587,43.1307,223,15,1600,2.8,0,,original camera file - EXIF fills anything left empty
+IMG-20260920-WA*,Badush Ridge,,23:15,3,36.5612,43.1120,512,20,3200,2.0,0,,one row for a whole WhatsApp session (date comes from the file name)

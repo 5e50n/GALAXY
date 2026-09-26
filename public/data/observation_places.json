@@ -1,0 +1,106 @@
+{
+ "illustrative": true,
+ "seed": 2026,
+ "note": "Illustrative gallery locations (random Nineveh places). Real photo locations are in observations.json.",
+ "photos": {
+  "photos/obs_fbe825bd47.jpg": {
+   "place": "Bartella",
+   "place_ar": "برطلة",
+   "lat": 36.3534,
+   "lon": 43.3898,
+   "elevation_m": 297.0,
+   "notes": "clear blue sky (3/3)",
+   "notes_ar": "سماء صافية (3/3)",
+   "model_sqm": 18.14,
+   "nelm": 4.08
+  },
+  "photos/obs_e38c160014.jpg": {
+   "place": "Tal Afar",
+   "place_ar": "تلعفر",
+   "lat": 36.3891,
+   "lon": 42.4607,
+   "elevation_m": 419.0,
+   "notes": "Light pollution inside a residential area at midnight",
+   "notes_ar": "التلوث الضوئي داخل منطقة سكنية عند منتصف الليل",
+   "model_sqm": 18.22,
+   "nelm": 4.15
+  },
+  "photos/obs_f862bf8a4d.jpg": {
+   "place": "Hammam al-Alil",
+   "place_ar": "حمام العليل",
+   "lat": 36.1631,
+   "lon": 43.2486,
+   "elevation_m": 217.0,
+   "notes": "Residential area at 2:30 AM - Pleiades cluster",
+   "notes_ar": "منطقة سكنية الساعة 2:30 فجراً - عنقود الثريا",
+   "model_sqm": 18.38,
+   "nelm": 4.28
+  },
+  "photos/obs_2181d74b6e.jpg": {
+   "place": "Ain Sifni (Shekhan)",
+   "place_ar": "عين سفني (الشيخان)",
+   "lat": 36.6977,
+   "lon": 43.3329,
+   "elevation_m": 498.0,
+   "notes": "Residential area at 2:30 AM - Moon/Mars/Jupiter/Aldebaran/Elnath",
+   "notes_ar": "منطقة سكنية الساعة 2:30 فجراً - القمر والمريخ والمشتري والدبران والنطح",
+   "model_sqm": 19.49,
+   "nelm": 5.14
+  },
+  "photos/obs_9c263b52b6.jpg": {
+   "place": "Qayyarah",
+   "place_ar": "القيارة",
+   "lat": 35.8114,
+   "lon": 43.2878,
+   "elevation_m": 192.0,
+   "notes": "trees on right (2/3)",
+   "notes_ar": "أشجار على اليمين (2/3)",
+   "model_sqm": 18.42,
+   "nelm": 4.31
+  },
+  "photos/obs_57b6fc5d45.jpg": {
+   "place": "Alqosh",
+   "place_ar": "ألقوش",
+   "lat": 36.7474,
+   "lon": 43.1025,
+   "elevation_m": 768.0,
+   "notes": "Residential area at 2:30 AM - next to building edge",
+   "notes_ar": "منطقة سكنية الساعة 2:30 فجراً - بجانب حافة بناية",
+   "model_sqm": 19.82,
+   "nelm": 5.37
+  },
+  "photos/obs_0e75e84bc3.jpg": {
+   "place": "Nimrud",
+   "place_ar": "النمرود",
+   "lat": 36.1046,
+   "lon": 43.3164,
+   "elevation_m": 199.0,
+   "notes": "Telescope shot (1/2)",
+   "notes_ar": "صورة بالتلسكوب (1/2)",
+   "model_sqm": 19.98,
+   "nelm": 5.48
+  },
+  "photos/obs_b497b8d8d8.jpg": {
+   "place": "Tel Kaif",
+   "place_ar": "تلكيف",
+   "lat": 36.4808,
+   "lon": 43.1408,
+   "elevation_m": 298.0,
+   "notes": "Telescope shot (2/2)",
+   "notes_ar": "صورة بالتلسكوب (2/2)",
+   "model_sqm": 19.05,
+   "nelm": 4.81
+  },
+  "photos/obs_458d0122c5.jpg": {
+   "place": "Qaraqosh (Al-Hamdaniya)",
+   "place_ar": "قره قوش (الحمدانية)",
+   "lat": 36.2849,
+   "lon": 43.3915,
+   "elevation_m": 289.0,
+   "notes": "Night sky (1/3)",
+   "notes_ar": "سماء الليل (1/3)",
+   "model_sqm": 18.77,
+   "nelm": 4.6
+  }
+ }
+}

@@ -1,0 +1,469 @@
+﻿site_key,instrument,body,goal,up_tonight,best_time_utc,altitude_deg,direction,magnitude,sky_at_best_time,sees_body,sees_goal,required_sqm,light_cut_needed_pct
+mosulCenter,eye,moon,craters and seas,true,2026-09-26T20:59:02.551Z,58.6,S,-12.63,17.08,true,true,1.07,0
+mosulCenter,eye,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.2,W,-0.14,16.66,false,false,13.57,0
+mosulCenter,eye,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.9,SW,-4.55,16.66,false,false,9.1,0
+mosulCenter,eye,mars,its red disk,true,2026-09-27T02:29:02.551Z,55.3,E,1.15,17.08,true,true,14.96,0
+mosulCenter,eye,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,36.6,E,-1.86,17.08,true,false,impossible,
+mosulCenter,eye,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,55.9,S,0.63,17.07,true,false,impossible,
+mosulCenter,eye,uranus,the planet,true,2026-09-27T00:59:02.551Z,74.7,S,5.64,17.37,false,false,20.24,100
+mosulCenter,eye,neptune,the planet,true,2026-09-26T20:59:02.551Z,53.5,S,7.81,17.08,false,false,impossible,
+mosulCenter,eye,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,30,S,14.48,17.11,false,false,impossible,
+mosulCenter,bino,moon,craters and seas,true,2026-09-26T20:59:02.551Z,58.6,S,-12.63,17.08,true,true,-2.7,0
+mosulCenter,bino,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.2,W,-0.14,16.66,false,false,9.75,0
+mosulCenter,bino,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.9,SW,-4.55,16.66,false,false,5.33,0
+mosulCenter,bino,mars,its red disk,true,2026-09-27T02:29:02.551Z,55.3,E,1.15,17.08,true,true,11.11,0
+mosulCenter,bino,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,36.6,E,-1.86,17.08,true,false,17.49,57
+mosulCenter,bino,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,55.9,S,0.63,17.07,true,false,20.3,unreachable
+mosulCenter,bino,uranus,the planet,true,2026-09-27T00:59:02.551Z,74.7,S,5.64,17.37,true,true,15.67,0
+mosulCenter,bino,neptune,the planet,true,2026-09-26T20:59:02.551Z,53.5,S,7.81,17.08,false,false,18.17,86
+mosulCenter,bino,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,30,S,14.48,17.11,false,false,impossible,
+mosulCenter,scope114,moon,craters and seas,true,2026-09-26T20:59:02.551Z,58.6,S,-12.63,17.08,true,true,-4.49,0
+mosulCenter,scope114,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.2,W,-0.14,16.66,false,false,7.96,0
+mosulCenter,scope114,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.9,SW,-4.55,16.66,false,false,3.54,0
+mosulCenter,scope114,mars,its red disk,true,2026-09-27T02:29:02.551Z,55.3,E,1.15,17.08,true,true,9.31,0
+mosulCenter,scope114,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,36.6,E,-1.86,17.08,true,true,15.52,0
+mosulCenter,scope114,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,55.9,S,0.63,17.07,true,false,17.92,78
+mosulCenter,scope114,uranus,the planet,true,2026-09-27T00:59:02.551Z,74.7,S,5.64,17.37,true,true,13.8,0
+mosulCenter,scope114,neptune,the planet,true,2026-09-26T20:59:02.551Z,53.5,S,7.81,17.08,true,true,16.14,0
+mosulCenter,scope114,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,30,S,14.48,17.11,false,false,impossible,
+mosulCenter,scope200,moon,craters and seas,true,2026-09-26T20:59:02.551Z,58.6,S,-12.63,17.08,true,true,-5.71,0
+mosulCenter,scope200,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.2,W,-0.14,16.66,false,false,6.74,0
+mosulCenter,scope200,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.9,SW,-4.55,16.66,false,false,2.32,0
+mosulCenter,scope200,mars,its red disk,true,2026-09-27T02:29:02.551Z,55.3,E,1.15,17.08,true,true,8.09,0
+mosulCenter,scope200,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,36.6,E,-1.86,17.08,true,true,14.24,0
+mosulCenter,scope200,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,55.9,S,0.63,17.07,true,true,16.54,0
+mosulCenter,scope200,uranus,the planet,true,2026-09-27T00:59:02.551Z,74.7,S,5.64,17.37,true,true,12.56,0
+mosulCenter,scope200,neptune,the planet,true,2026-09-26T20:59:02.551Z,53.5,S,7.81,17.08,true,true,14.85,0
+mosulCenter,scope200,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,30,S,14.48,17.11,false,false,impossible,
+baashiqa,eye,moon,craters and seas,true,2026-09-26T20:59:02.551Z,58.6,S,-12.63,17.4,true,true,1.07,0
+baashiqa,eye,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3,W,-0.14,17.76,false,false,13.57,0
+baashiqa,eye,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.7,SW,-4.55,17.76,false,false,9.1,0
+baashiqa,eye,mars,its red disk,true,2026-09-27T02:29:02.551Z,55.4,E,1.15,18.02,true,true,14.96,0
+baashiqa,eye,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,36.8,E,-1.86,18.02,true,false,impossible,
+baashiqa,eye,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,55.8,S,0.63,17.38,true,false,impossible,
+baashiqa,eye,uranus,the planet,true,2026-09-27T00:59:02.551Z,74.6,S,5.64,17.58,false,false,20.24,99
+baashiqa,eye,neptune,the planet,true,2026-09-26T20:59:02.551Z,53.4,S,7.81,17.4,false,false,impossible,
+baashiqa,eye,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,29.9,S,14.48,17.82,false,false,impossible,
+baashiqa,bino,moon,craters and seas,true,2026-09-26T20:59:02.551Z,58.6,S,-12.63,17.4,true,true,-2.7,0
+baashiqa,bino,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3,W,-0.14,17.76,false,false,9.75,0
+baashiqa,bino,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.7,SW,-4.55,17.76,false,false,5.33,0
+baashiqa,bino,mars,its red disk,true,2026-09-27T02:29:02.551Z,55.4,E,1.15,18.02,true,true,11.11,0
+baashiqa,bino,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,36.8,E,-1.86,18.02,true,true,17.49,0
+baashiqa,bino,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,55.8,S,0.63,17.38,true,false,20.3,unreachable
+baashiqa,bino,uranus,the planet,true,2026-09-27T00:59:02.551Z,74.6,S,5.64,17.58,true,true,15.67,0
+baashiqa,bino,neptune,the planet,true,2026-09-26T20:59:02.551Z,53.4,S,7.81,17.4,false,false,18.17,95
+baashiqa,bino,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,29.9,S,14.48,17.82,false,false,impossible,
+baashiqa,scope114,moon,craters and seas,true,2026-09-26T20:59:02.551Z,58.6,S,-12.63,17.4,true,true,-4.49,0
+baashiqa,scope114,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3,W,-0.14,17.76,false,false,7.96,0
+baashiqa,scope114,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.7,SW,-4.55,17.76,false,false,3.54,0
+baashiqa,scope114,mars,its red disk,true,2026-09-27T02:29:02.551Z,55.4,E,1.15,18.02,true,true,9.31,0
+baashiqa,scope114,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,36.8,E,-1.86,18.02,true,true,15.52,0
+baashiqa,scope114,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,55.8,S,0.63,17.38,true,false,17.92,50
+baashiqa,scope114,uranus,the planet,true,2026-09-27T00:59:02.551Z,74.6,S,5.64,17.58,true,true,13.8,0
+baashiqa,scope114,neptune,the planet,true,2026-09-26T20:59:02.551Z,53.4,S,7.81,17.4,true,true,16.14,0
+baashiqa,scope114,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,29.9,S,14.48,17.82,false,false,impossible,
+baashiqa,scope200,moon,craters and seas,true,2026-09-26T20:59:02.551Z,58.6,S,-12.63,17.4,true,true,-5.71,0
+baashiqa,scope200,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3,W,-0.14,17.76,false,false,6.74,0
+baashiqa,scope200,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.7,SW,-4.55,17.76,false,false,2.32,0
+baashiqa,scope200,mars,its red disk,true,2026-09-27T02:29:02.551Z,55.4,E,1.15,18.02,true,true,8.09,0
+baashiqa,scope200,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,36.8,E,-1.86,18.02,true,true,14.24,0
+baashiqa,scope200,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,55.8,S,0.63,17.38,true,true,16.54,0
+baashiqa,scope200,uranus,the planet,true,2026-09-27T00:59:02.551Z,74.6,S,5.64,17.58,true,true,12.56,0
+baashiqa,scope200,neptune,the planet,true,2026-09-26T20:59:02.551Z,53.4,S,7.81,17.4,true,true,14.85,0
+baashiqa,scope200,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,29.9,S,14.48,17.82,false,false,impossible,
+badush,eye,moon,craters and seas,true,2026-09-26T20:59:02.551Z,58.4,S,-12.63,18.65,true,true,1.07,0
+badush,eye,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.2,W,-0.14,18.93,false,false,13.57,0
+badush,eye,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.8,SW,-4.55,18.93,false,false,9.1,0
+badush,eye,mars,its red disk,true,2026-09-27T02:29:02.551Z,55.2,E,1.15,19.28,true,true,14.96,0
+badush,eye,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,36.6,E,-1.86,19.28,true,false,impossible,
+badush,eye,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,55.7,S,0.63,18.69,true,false,impossible,
+badush,eye,uranus,the planet,true,2026-09-27T00:59:02.551Z,74.5,S,5.64,19.37,false,false,20.24,90
+badush,eye,neptune,the planet,true,2026-09-26T20:59:02.551Z,53.3,S,7.81,18.65,false,false,impossible,
+badush,eye,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,29.8,S,14.48,19.16,false,false,impossible,
+badush,bino,moon,craters and seas,true,2026-09-26T20:59:02.551Z,58.4,S,-12.63,18.65,true,true,-2.7,0
+badush,bino,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.2,W,-0.14,18.93,false,false,9.75,0
+badush,bino,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.8,SW,-4.55,18.93,false,false,5.33,0
+badush,bino,mars,its red disk,true,2026-09-27T02:29:02.551Z,55.2,E,1.15,19.28,true,true,11.11,0
+badush,bino,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,36.6,E,-1.86,19.28,true,true,17.49,0
+badush,bino,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,55.7,S,0.63,18.69,true,false,20.3,unreachable
+badush,bino,uranus,the planet,true,2026-09-27T00:59:02.551Z,74.5,S,5.64,19.37,true,true,15.67,0
+badush,bino,neptune,the planet,true,2026-09-26T20:59:02.551Z,53.3,S,7.81,18.65,true,true,18.17,0
+badush,bino,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,29.8,S,14.48,19.16,false,false,impossible,
+badush,scope114,moon,craters and seas,true,2026-09-26T20:59:02.551Z,58.4,S,-12.63,18.65,true,true,-4.49,0
+badush,scope114,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.2,W,-0.14,18.93,false,false,7.96,0
+badush,scope114,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.8,SW,-4.55,18.93,false,false,3.54,0
+badush,scope114,mars,its red disk,true,2026-09-27T02:29:02.551Z,55.2,E,1.15,19.28,true,true,9.31,0
+badush,scope114,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,36.6,E,-1.86,19.28,true,true,15.52,0
+badush,scope114,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,55.7,S,0.63,18.69,true,true,17.92,0
+badush,scope114,uranus,the planet,true,2026-09-27T00:59:02.551Z,74.5,S,5.64,19.37,true,true,13.8,0
+badush,scope114,neptune,the planet,true,2026-09-26T20:59:02.551Z,53.3,S,7.81,18.65,true,true,16.14,0
+badush,scope114,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,29.8,S,14.48,19.16,false,false,impossible,
+badush,scope200,moon,craters and seas,true,2026-09-26T20:59:02.551Z,58.4,S,-12.63,18.65,true,true,-5.71,0
+badush,scope200,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.2,W,-0.14,18.93,false,false,6.74,0
+badush,scope200,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.8,SW,-4.55,18.93,false,false,2.32,0
+badush,scope200,mars,its red disk,true,2026-09-27T02:29:02.551Z,55.2,E,1.15,19.28,true,true,8.09,0
+badush,scope200,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,36.6,E,-1.86,19.28,true,true,14.25,0
+badush,scope200,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,55.7,S,0.63,18.69,true,true,16.54,0
+badush,scope200,uranus,the planet,true,2026-09-27T00:59:02.551Z,74.5,S,5.64,19.37,true,true,12.56,0
+badush,scope200,neptune,the planet,true,2026-09-26T20:59:02.551Z,53.3,S,7.81,18.65,true,true,14.85,0
+badush,scope200,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,29.8,S,14.48,19.16,false,false,impossible,
+hatra,eye,moon,craters and seas,true,2026-09-26T20:59:02.551Z,59.4,S,-12.63,18.3,true,true,1.06,0
+hatra,eye,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.8,W,-0.14,18.76,false,false,13.57,0
+hatra,eye,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,5.6,SW,-4.55,18.76,false,false,9.1,0
+hatra,eye,mars,its red disk,true,2026-09-27T02:29:02.551Z,55.1,E,1.15,19.14,true,true,14.96,0
+hatra,eye,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,36.4,E,-1.86,19.14,true,false,impossible,
+hatra,eye,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,56.6,S,0.63,18.3,true,false,impossible,
+hatra,eye,uranus,the planet,true,2026-09-27T00:59:02.551Z,75.5,S,5.64,19.41,false,false,20.24,97
+hatra,eye,neptune,the planet,true,2026-09-26T20:59:02.551Z,54.3,S,7.81,18.3,false,false,impossible,
+hatra,eye,pluto,a faint star-like dot,true,2026-09-26T17:19:02.551Z,30.8,S,14.48,18.61,false,false,impossible,
+hatra,bino,moon,craters and seas,true,2026-09-26T20:59:02.551Z,59.4,S,-12.63,18.3,true,true,-2.71,0
+hatra,bino,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.8,W,-0.14,18.76,false,false,9.75,0
+hatra,bino,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,5.6,SW,-4.55,18.76,false,false,5.33,0
+hatra,bino,mars,its red disk,true,2026-09-27T02:29:02.551Z,55.1,E,1.15,19.14,true,true,11.11,0
+hatra,bino,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,36.4,E,-1.86,19.14,true,true,17.49,0
+hatra,bino,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,56.6,S,0.63,18.3,true,false,20.3,unreachable
+hatra,bino,uranus,the planet,true,2026-09-27T00:59:02.551Z,75.5,S,5.64,19.41,true,true,15.67,0
+hatra,bino,neptune,the planet,true,2026-09-26T20:59:02.551Z,54.3,S,7.81,18.3,true,true,18.17,0
+hatra,bino,pluto,a faint star-like dot,true,2026-09-26T17:19:02.551Z,30.8,S,14.48,18.61,false,false,impossible,
+hatra,scope114,moon,craters and seas,true,2026-09-26T20:59:02.551Z,59.4,S,-12.63,18.3,true,true,-4.49,0
+hatra,scope114,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.8,W,-0.14,18.76,false,false,7.96,0
+hatra,scope114,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,5.6,SW,-4.55,18.76,false,false,3.54,0
+hatra,scope114,mars,its red disk,true,2026-09-27T02:29:02.551Z,55.1,E,1.15,19.14,true,true,9.31,0
+hatra,scope114,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,36.4,E,-1.86,19.14,true,true,15.53,0
+hatra,scope114,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,56.6,S,0.63,18.3,true,true,17.92,0
+hatra,scope114,uranus,the planet,true,2026-09-27T00:59:02.551Z,75.5,S,5.64,19.41,true,true,13.8,0
+hatra,scope114,neptune,the planet,true,2026-09-26T20:59:02.551Z,54.3,S,7.81,18.3,true,true,16.14,0
+hatra,scope114,pluto,a faint star-like dot,true,2026-09-26T17:19:02.551Z,30.8,S,14.48,18.61,false,false,impossible,
+hatra,scope200,moon,craters and seas,true,2026-09-26T20:59:02.551Z,59.4,S,-12.63,18.3,true,true,-5.72,0
+hatra,scope200,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.8,W,-0.14,18.76,false,false,6.74,0
+hatra,scope200,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,5.6,SW,-4.55,18.76,false,false,2.32,0
+hatra,scope200,mars,its red disk,true,2026-09-27T02:29:02.551Z,55.1,E,1.15,19.14,true,true,8.09,0
+hatra,scope200,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,36.4,E,-1.86,19.14,true,true,14.25,0
+hatra,scope200,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,56.6,S,0.63,18.3,true,true,16.53,0
+hatra,scope200,uranus,the planet,true,2026-09-27T00:59:02.551Z,75.5,S,5.64,19.41,true,true,12.55,0
+hatra,scope200,neptune,the planet,true,2026-09-26T20:59:02.551Z,54.3,S,7.81,18.3,true,true,14.84,0
+hatra,scope200,pluto,a faint star-like dot,true,2026-09-26T17:19:02.551Z,30.8,S,14.48,18.61,false,false,impossible,
+sinjar,eye,moon,craters and seas,true,2026-09-26T21:09:02.551Z,58.7,S,-12.63,18.7,true,true,1.07,0
+sinjar,eye,mercury,the planet in twilight,false,2026-09-26T15:39:02.551Z,2.3,W,-0.14,19.48,false,false,13.57,0
+sinjar,eye,venus,its phase (crescent),false,2026-09-26T15:39:02.551Z,4,SW,-4.55,19.48,false,false,9.1,0
+sinjar,eye,mars,its red disk,true,2026-09-27T02:29:02.551Z,54.3,E,1.15,19.91,true,true,14.97,0
+sinjar,eye,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,35.6,E,-1.86,19.91,true,false,impossible,
+sinjar,eye,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,55.9,S,0.63,18.68,true,false,impossible,
+sinjar,eye,uranus,the planet,true,2026-09-27T01:09:02.551Z,74.7,S,5.64,20.29,true,true,20.24,0
+sinjar,eye,neptune,the planet,true,2026-09-26T21:09:02.551Z,53.5,S,7.81,18.7,false,false,impossible,
+sinjar,eye,pluto,a faint star-like dot,true,2026-09-26T17:19:02.551Z,30,S,14.48,19.15,false,false,impossible,
+sinjar,bino,moon,craters and seas,true,2026-09-26T21:09:02.551Z,58.7,S,-12.63,18.7,true,true,-2.7,0
+sinjar,bino,mercury,the planet in twilight,false,2026-09-26T15:39:02.551Z,2.3,W,-0.14,19.48,false,false,9.75,0
+sinjar,bino,venus,its phase (crescent),false,2026-09-26T15:39:02.551Z,4,SW,-4.55,19.48,false,false,5.33,0
+sinjar,bino,mars,its red disk,true,2026-09-27T02:29:02.551Z,54.3,E,1.15,19.91,true,true,11.12,0
+sinjar,bino,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,35.6,E,-1.86,19.91,true,true,17.5,0
+sinjar,bino,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,55.9,S,0.63,18.68,true,false,20.3,unreachable
+sinjar,bino,uranus,the planet,true,2026-09-27T01:09:02.551Z,74.7,S,5.64,20.29,true,true,15.67,0
+sinjar,bino,neptune,the planet,true,2026-09-26T21:09:02.551Z,53.5,S,7.81,18.7,true,true,18.17,0
+sinjar,bino,pluto,a faint star-like dot,true,2026-09-26T17:19:02.551Z,30,S,14.48,19.15,false,false,impossible,
+sinjar,scope114,moon,craters and seas,true,2026-09-26T21:09:02.551Z,58.7,S,-12.63,18.7,true,true,-4.49,0
+sinjar,scope114,mercury,the planet in twilight,false,2026-09-26T15:39:02.551Z,2.3,W,-0.14,19.48,false,false,7.96,0
+sinjar,scope114,venus,its phase (crescent),false,2026-09-26T15:39:02.551Z,4,SW,-4.55,19.48,false,false,3.54,0
+sinjar,scope114,mars,its red disk,true,2026-09-27T02:29:02.551Z,54.3,E,1.15,19.91,true,true,9.32,0
+sinjar,scope114,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,35.6,E,-1.86,19.91,true,true,15.54,0
+sinjar,scope114,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,55.9,S,0.63,18.68,true,true,17.92,0
+sinjar,scope114,uranus,the planet,true,2026-09-27T01:09:02.551Z,74.7,S,5.64,20.29,true,true,13.8,0
+sinjar,scope114,neptune,the planet,true,2026-09-26T21:09:02.551Z,53.5,S,7.81,18.7,true,true,16.14,0
+sinjar,scope114,pluto,a faint star-like dot,true,2026-09-26T17:19:02.551Z,30,S,14.48,19.15,false,false,impossible,
+sinjar,scope200,moon,craters and seas,true,2026-09-26T21:09:02.551Z,58.7,S,-12.63,18.7,true,true,-5.71,0
+sinjar,scope200,mercury,the planet in twilight,false,2026-09-26T15:39:02.551Z,2.3,W,-0.14,19.48,false,false,6.74,0
+sinjar,scope200,venus,its phase (crescent),false,2026-09-26T15:39:02.551Z,4,SW,-4.55,19.48,false,false,2.32,0
+sinjar,scope200,mars,its red disk,true,2026-09-27T02:29:02.551Z,54.3,E,1.15,19.91,true,true,8.09,0
+sinjar,scope200,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,35.6,E,-1.86,19.91,true,true,14.26,0
+sinjar,scope200,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,55.9,S,0.63,18.68,true,true,16.54,0
+sinjar,scope200,uranus,the planet,true,2026-09-27T01:09:02.551Z,74.7,S,5.64,20.29,true,true,12.56,0
+sinjar,scope200,neptune,the planet,true,2026-09-26T21:09:02.551Z,53.5,S,7.81,18.7,true,true,14.85,0
+sinjar,scope200,pluto,a faint star-like dot,true,2026-09-26T17:19:02.551Z,30,S,14.48,19.15,false,false,impossible,
+baghdadCenter,eye,moon,craters and seas,true,2026-09-26T20:59:02.551Z,61.7,S,-12.63,17.14,true,true,1.06,0
+baghdadCenter,eye,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.1,W,-0.14,16.7,false,false,13.57,0
+baghdadCenter,eye,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,5.5,SW,-4.55,16.7,false,false,9.1,0
+baghdadCenter,eye,mars,its red disk,true,2026-09-27T02:29:02.551Z,57,E,1.15,16.81,true,true,14.96,0
+baghdadCenter,eye,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,38,E,-1.86,16.81,true,false,impossible,
+baghdadCenter,eye,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,58.9,S,0.63,17.2,true,false,impossible,
+baghdadCenter,eye,uranus,the planet,true,2026-09-27T00:59:02.551Z,77.7,S,5.64,17.05,false,false,20.23,100
+baghdadCenter,eye,neptune,the planet,true,2026-09-26T20:59:02.551Z,56.5,S,7.81,17.14,false,false,impossible,
+baghdadCenter,eye,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,33.1,S,14.48,16.86,false,false,impossible,
+baghdadCenter,bino,moon,craters and seas,true,2026-09-26T20:59:02.551Z,61.7,S,-12.63,17.14,true,true,-2.71,0
+baghdadCenter,bino,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.1,W,-0.14,16.7,false,false,9.75,0
+baghdadCenter,bino,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,5.5,SW,-4.55,16.7,false,false,5.33,0
+baghdadCenter,bino,mars,its red disk,true,2026-09-27T02:29:02.551Z,57,E,1.15,16.81,true,true,11.1,0
+baghdadCenter,bino,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,38,E,-1.86,16.81,true,false,17.47,81
+baghdadCenter,bino,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,58.9,S,0.63,17.2,true,false,20.28,unreachable
+baghdadCenter,bino,uranus,the planet,true,2026-09-27T00:59:02.551Z,77.7,S,5.64,17.05,true,true,15.67,0
+baghdadCenter,bino,neptune,the planet,true,2026-09-26T20:59:02.551Z,56.5,S,7.81,17.14,false,false,18.16,96
+baghdadCenter,bino,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,33.1,S,14.48,16.86,false,false,impossible,
+baghdadCenter,scope114,moon,craters and seas,true,2026-09-26T20:59:02.551Z,61.7,S,-12.63,17.14,true,true,-4.5,0
+baghdadCenter,scope114,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.1,W,-0.14,16.7,false,false,7.96,0
+baghdadCenter,scope114,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,5.5,SW,-4.55,16.7,false,false,3.54,0
+baghdadCenter,scope114,mars,its red disk,true,2026-09-27T02:29:02.551Z,57,E,1.15,16.81,true,true,9.3,0
+baghdadCenter,scope114,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,38,E,-1.86,16.81,true,true,15.51,0
+baghdadCenter,scope114,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,58.9,S,0.63,17.2,true,false,17.91,92
+baghdadCenter,scope114,uranus,the planet,true,2026-09-27T00:59:02.551Z,77.7,S,5.64,17.05,true,true,13.8,0
+baghdadCenter,scope114,neptune,the planet,true,2026-09-26T20:59:02.551Z,56.5,S,7.81,17.14,true,true,16.13,0
+baghdadCenter,scope114,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,33.1,S,14.48,16.86,false,false,impossible,
+baghdadCenter,scope200,moon,craters and seas,true,2026-09-26T20:59:02.551Z,61.7,S,-12.63,17.14,true,true,-5.72,0
+baghdadCenter,scope200,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.1,W,-0.14,16.7,false,false,6.74,0
+baghdadCenter,scope200,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,5.5,SW,-4.55,16.7,false,false,2.32,0
+baghdadCenter,scope200,mars,its red disk,true,2026-09-27T02:29:02.551Z,57,E,1.15,16.81,true,true,8.08,0
+baghdadCenter,scope200,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,38,E,-1.86,16.81,true,true,14.23,0
+baghdadCenter,scope200,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,58.9,S,0.63,17.2,true,true,16.52,0
+baghdadCenter,scope200,uranus,the planet,true,2026-09-27T00:59:02.551Z,77.7,S,5.64,17.05,true,true,12.55,0
+baghdadCenter,scope200,neptune,the planet,true,2026-09-26T20:59:02.551Z,56.5,S,7.81,17.14,true,true,14.83,0
+baghdadCenter,scope200,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,33.1,S,14.48,16.86,false,false,impossible,
+basraCenter,eye,moon,craters and seas,true,2026-09-26T20:39:02.551Z,64.4,S,-12.64,17.09,true,true,1.05,0
+basraCenter,eye,mercury,the planet in twilight,false,2026-09-26T15:09:02.551Z,5.1,W,-0.14,16.53,false,false,13.57,0
+basraCenter,eye,venus,its phase (crescent),false,2026-09-26T15:09:02.551Z,8.1,SW,-4.55,16.53,false,false,9.1,0
+basraCenter,eye,mars,its red disk,true,2026-09-27T02:09:02.551Z,56.1,E,1.15,16.7,true,true,14.96,0
+basraCenter,eye,jupiter,its 4 Galilean moons,true,2026-09-27T02:09:02.551Z,36.9,E,-1.86,16.7,true,false,impossible,
+basraCenter,eye,saturn,its moon Titan,true,2026-09-26T21:19:02.551Z,61.7,S,0.63,17.13,true,false,impossible,
+basraCenter,eye,uranus,the planet,true,2026-09-27T00:39:02.551Z,80.5,S,5.64,17.04,false,false,20.23,100
+basraCenter,eye,neptune,the planet,true,2026-09-26T20:39:02.551Z,59.4,S,7.81,17.09,false,false,impossible,
+basraCenter,eye,pluto,a faint star-like dot,true,2026-09-26T16:59:02.551Z,35.9,S,14.48,16.88,false,false,impossible,
+basraCenter,bino,moon,craters and seas,true,2026-09-26T20:39:02.551Z,64.4,S,-12.64,17.09,true,true,-2.72,0
+basraCenter,bino,mercury,the planet in twilight,false,2026-09-26T15:09:02.551Z,5.1,W,-0.14,16.53,false,false,9.75,0
+basraCenter,bino,venus,its phase (crescent),false,2026-09-26T15:09:02.551Z,8.1,SW,-4.55,16.53,false,false,5.33,0
+basraCenter,bino,mars,its red disk,true,2026-09-27T02:09:02.551Z,56.1,E,1.15,16.7,true,true,11.11,0
+basraCenter,bino,jupiter,its 4 Galilean moons,true,2026-09-27T02:09:02.551Z,36.9,E,-1.86,16.7,true,false,17.49,84
+basraCenter,bino,saturn,its moon Titan,true,2026-09-26T21:19:02.551Z,61.7,S,0.63,17.13,true,false,20.27,unreachable
+basraCenter,bino,uranus,the planet,true,2026-09-27T00:39:02.551Z,80.5,S,5.64,17.04,true,true,15.66,0
+basraCenter,bino,neptune,the planet,true,2026-09-26T20:39:02.551Z,59.4,S,7.81,17.09,false,false,18.14,95
+basraCenter,bino,pluto,a faint star-like dot,true,2026-09-26T16:59:02.551Z,35.9,S,14.48,16.88,false,false,impossible,
+basraCenter,scope114,moon,craters and seas,true,2026-09-26T20:39:02.551Z,64.4,S,-12.64,17.09,true,true,-4.51,0
+basraCenter,scope114,mercury,the planet in twilight,false,2026-09-26T15:09:02.551Z,5.1,W,-0.14,16.53,false,false,7.96,0
+basraCenter,scope114,venus,its phase (crescent),false,2026-09-26T15:09:02.551Z,8.1,SW,-4.55,16.53,false,false,3.54,0
+basraCenter,scope114,mars,its red disk,true,2026-09-27T02:09:02.551Z,56.1,E,1.15,16.7,true,true,9.31,0
+basraCenter,scope114,jupiter,its 4 Galilean moons,true,2026-09-27T02:09:02.551Z,36.9,E,-1.86,16.7,true,true,15.52,0
+basraCenter,scope114,saturn,its moon Titan,true,2026-09-26T21:19:02.551Z,61.7,S,0.63,17.13,true,false,17.9,93
+basraCenter,scope114,uranus,the planet,true,2026-09-27T00:39:02.551Z,80.5,S,5.64,17.04,true,true,13.79,0
+basraCenter,scope114,neptune,the planet,true,2026-09-26T20:39:02.551Z,59.4,S,7.81,17.09,true,true,16.12,0
+basraCenter,scope114,pluto,a faint star-like dot,true,2026-09-26T16:59:02.551Z,35.9,S,14.48,16.88,false,false,impossible,
+basraCenter,scope200,moon,craters and seas,true,2026-09-26T20:39:02.551Z,64.4,S,-12.64,17.09,true,true,-5.73,0
+basraCenter,scope200,mercury,the planet in twilight,false,2026-09-26T15:09:02.551Z,5.1,W,-0.14,16.53,false,false,6.74,0
+basraCenter,scope200,venus,its phase (crescent),false,2026-09-26T15:09:02.551Z,8.1,SW,-4.55,16.53,false,false,2.32,0
+basraCenter,scope200,mars,its red disk,true,2026-09-27T02:09:02.551Z,56.1,E,1.15,16.7,true,true,8.08,0
+basraCenter,scope200,jupiter,its 4 Galilean moons,true,2026-09-27T02:09:02.551Z,36.9,E,-1.86,16.7,true,true,14.24,0
+basraCenter,scope200,saturn,its moon Titan,true,2026-09-26T21:19:02.551Z,61.7,S,0.63,17.13,true,true,16.51,0
+basraCenter,scope200,uranus,the planet,true,2026-09-27T00:39:02.551Z,80.5,S,5.64,17.04,true,true,12.55,0
+basraCenter,scope200,neptune,the planet,true,2026-09-26T20:39:02.551Z,59.4,S,7.81,17.09,true,true,14.82,0
+basraCenter,scope200,pluto,a faint star-like dot,true,2026-09-26T16:59:02.551Z,35.9,S,14.48,16.88,false,false,impossible,
+erbilCenter,eye,moon,craters and seas,true,2026-09-26T20:59:02.551Z,58.8,S,-12.63,17.21,true,true,1.07,0
+erbilCenter,eye,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,2.6,W,-0.14,17.22,false,false,13.57,0
+erbilCenter,eye,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.4,SW,-4.55,17.22,false,false,9.1,0
+erbilCenter,eye,mars,its red disk,true,2026-09-27T02:29:02.551Z,56,E,1.15,17.44,true,true,14.96,0
+erbilCenter,eye,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,37.4,E,-1.86,17.44,true,false,impossible,
+erbilCenter,eye,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,56,S,0.63,17.2,true,false,impossible,
+erbilCenter,eye,uranus,the planet,true,2026-09-27T00:59:02.551Z,74.9,S,5.64,17.68,false,false,20.24,100
+erbilCenter,eye,neptune,the planet,true,2026-09-26T20:59:02.551Z,53.7,S,7.81,17.21,false,false,impossible,
+erbilCenter,eye,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,30.2,S,14.48,17.54,false,false,impossible,
+erbilCenter,bino,moon,craters and seas,true,2026-09-26T20:59:02.551Z,58.8,S,-12.63,17.21,true,true,-2.7,0
+erbilCenter,bino,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,2.6,W,-0.14,17.22,false,false,9.75,0
+erbilCenter,bino,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.4,SW,-4.55,17.22,false,false,5.33,0
+erbilCenter,bino,mars,its red disk,true,2026-09-27T02:29:02.551Z,56,E,1.15,17.44,true,true,11.11,0
+erbilCenter,bino,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,37.4,E,-1.86,17.44,true,false,17.48,20
+erbilCenter,bino,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,56,S,0.63,17.2,true,false,20.3,unreachable
+erbilCenter,bino,uranus,the planet,true,2026-09-27T00:59:02.551Z,74.9,S,5.64,17.68,true,true,15.67,0
+erbilCenter,bino,neptune,the planet,true,2026-09-26T20:59:02.551Z,53.7,S,7.81,17.21,false,false,18.17,82
+erbilCenter,bino,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,30.2,S,14.48,17.54,false,false,impossible,
+erbilCenter,scope114,moon,craters and seas,true,2026-09-26T20:59:02.551Z,58.8,S,-12.63,17.21,true,true,-4.49,0
+erbilCenter,scope114,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,2.6,W,-0.14,17.22,false,false,7.96,0
+erbilCenter,scope114,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.4,SW,-4.55,17.22,false,false,3.54,0
+erbilCenter,scope114,mars,its red disk,true,2026-09-27T02:29:02.551Z,56,E,1.15,17.44,true,true,9.31,0
+erbilCenter,scope114,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,37.4,E,-1.86,17.44,true,true,15.51,0
+erbilCenter,scope114,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,56,S,0.63,17.2,true,false,17.92,76
+erbilCenter,scope114,uranus,the planet,true,2026-09-27T00:59:02.551Z,74.9,S,5.64,17.68,true,true,13.8,0
+erbilCenter,scope114,neptune,the planet,true,2026-09-26T20:59:02.551Z,53.7,S,7.81,17.21,true,true,16.14,0
+erbilCenter,scope114,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,30.2,S,14.48,17.54,false,false,impossible,
+erbilCenter,scope200,moon,craters and seas,true,2026-09-26T20:59:02.551Z,58.8,S,-12.63,17.21,true,true,-5.71,0
+erbilCenter,scope200,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,2.6,W,-0.14,17.22,false,false,6.74,0
+erbilCenter,scope200,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.4,SW,-4.55,17.22,false,false,2.32,0
+erbilCenter,scope200,mars,its red disk,true,2026-09-27T02:29:02.551Z,56,E,1.15,17.44,true,true,8.08,0
+erbilCenter,scope200,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,37.4,E,-1.86,17.44,true,true,14.24,0
+erbilCenter,scope200,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,56,S,0.63,17.2,true,true,16.53,0
+erbilCenter,scope200,uranus,the planet,true,2026-09-27T00:59:02.551Z,74.9,S,5.64,17.68,true,true,12.55,0
+erbilCenter,scope200,neptune,the planet,true,2026-09-26T20:59:02.551Z,53.7,S,7.81,17.21,true,true,14.85,0
+erbilCenter,scope200,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,30.2,S,14.48,17.54,false,false,impossible,
+najafCenter,eye,moon,craters and seas,true,2026-09-26T20:59:02.551Z,63,S,-12.63,17.18,true,true,1.05,0
+najafCenter,eye,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.4,W,-0.14,16.71,false,false,13.57,0
+najafCenter,eye,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,6.2,SW,-4.55,16.71,false,false,9.1,0
+najafCenter,eye,mars,its red disk,true,2026-09-27T02:29:02.551Z,57.2,E,1.15,17.15,true,true,14.96,0
+najafCenter,eye,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,38.1,E,-1.86,17.15,true,false,impossible,
+najafCenter,eye,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,60.2,S,0.63,17.17,true,false,impossible,
+najafCenter,eye,uranus,the planet,true,2026-09-27T00:59:02.551Z,79.1,S,5.64,17.36,false,false,20.23,100
+najafCenter,eye,neptune,the planet,true,2026-09-26T20:59:02.551Z,57.9,S,7.81,17.18,false,false,impossible,
+najafCenter,eye,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,34.4,S,14.48,16.95,false,false,impossible,
+najafCenter,bino,moon,craters and seas,true,2026-09-26T20:59:02.551Z,63,S,-12.63,17.18,true,true,-2.72,0
+najafCenter,bino,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.4,W,-0.14,16.71,false,false,9.75,0
+najafCenter,bino,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,6.2,SW,-4.55,16.71,false,false,5.33,0
+najafCenter,bino,mars,its red disk,true,2026-09-27T02:29:02.551Z,57.2,E,1.15,17.15,true,true,11.1,0
+najafCenter,bino,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,38.1,E,-1.86,17.15,true,false,17.47,61
+najafCenter,bino,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,60.2,S,0.63,17.17,true,false,20.28,unreachable
+najafCenter,bino,uranus,the planet,true,2026-09-27T00:59:02.551Z,79.1,S,5.64,17.36,true,true,15.66,0
+najafCenter,bino,neptune,the planet,true,2026-09-26T20:59:02.551Z,57.9,S,7.81,17.18,false,false,18.15,100
+najafCenter,bino,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,34.4,S,14.48,16.95,false,false,impossible,
+najafCenter,scope114,moon,craters and seas,true,2026-09-26T20:59:02.551Z,63,S,-12.63,17.18,true,true,-4.51,0
+najafCenter,scope114,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.4,W,-0.14,16.71,false,false,7.96,0
+najafCenter,scope114,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,6.2,SW,-4.55,16.71,false,false,3.54,0
+najafCenter,scope114,mars,its red disk,true,2026-09-27T02:29:02.551Z,57.2,E,1.15,17.15,true,true,9.3,0
+najafCenter,scope114,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,38.1,E,-1.86,17.15,true,true,15.5,0
+najafCenter,scope114,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,60.2,S,0.63,17.17,true,false,17.9,92
+najafCenter,scope114,uranus,the planet,true,2026-09-27T00:59:02.551Z,79.1,S,5.64,17.36,true,true,13.8,0
+najafCenter,scope114,neptune,the planet,true,2026-09-26T20:59:02.551Z,57.9,S,7.81,17.18,true,true,16.12,0
+najafCenter,scope114,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,34.4,S,14.48,16.95,false,false,impossible,
+najafCenter,scope200,moon,craters and seas,true,2026-09-26T20:59:02.551Z,63,S,-12.63,17.18,true,true,-5.73,0
+najafCenter,scope200,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.4,W,-0.14,16.71,false,false,6.74,0
+najafCenter,scope200,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,6.2,SW,-4.55,16.71,false,false,2.32,0
+najafCenter,scope200,mars,its red disk,true,2026-09-27T02:29:02.551Z,57.2,E,1.15,17.15,true,true,8.08,0
+najafCenter,scope200,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,38.1,E,-1.86,17.15,true,true,14.23,0
+najafCenter,scope200,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,60.2,S,0.63,17.17,true,true,16.52,0
+najafCenter,scope200,uranus,the planet,true,2026-09-27T00:59:02.551Z,79.1,S,5.64,17.36,true,true,12.55,0
+najafCenter,scope200,neptune,the planet,true,2026-09-26T20:59:02.551Z,57.9,S,7.81,17.18,true,true,14.83,0
+najafCenter,scope200,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,34.4,S,14.48,16.95,false,false,impossible,
+sulaymaniyahCenter,eye,moon,craters and seas,true,2026-09-26T20:49:02.551Z,59.4,S,-12.64,17.38,true,true,1.06,0
+sulaymaniyahCenter,eye,mercury,the planet in twilight,false,2026-09-26T15:19:02.551Z,3.6,W,-0.14,17.36,false,false,13.57,0
+sulaymaniyahCenter,eye,venus,its phase (crescent),false,2026-09-26T15:19:02.551Z,5.4,SW,-4.55,17.36,false,false,9.1,0
+sulaymaniyahCenter,eye,mars,its red disk,true,2026-09-27T02:19:02.551Z,55.3,E,1.15,17.59,true,true,14.96,0
+sulaymaniyahCenter,eye,jupiter,its 4 Galilean moons,true,2026-09-27T02:19:02.551Z,36.6,E,-1.86,17.59,true,false,impossible,
+sulaymaniyahCenter,eye,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,56.7,S,0.63,17.36,true,false,impossible,
+sulaymaniyahCenter,eye,uranus,the planet,true,2026-09-27T00:49:02.551Z,75.5,S,5.64,17.77,false,false,20.23,95
+sulaymaniyahCenter,eye,neptune,the planet,true,2026-09-26T20:49:02.551Z,54.3,S,7.81,17.38,false,false,impossible,
+sulaymaniyahCenter,eye,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,30.8,S,14.48,17.5,false,false,impossible,
+sulaymaniyahCenter,bino,moon,craters and seas,true,2026-09-26T20:49:02.551Z,59.4,S,-12.64,17.38,true,true,-2.71,0
+sulaymaniyahCenter,bino,mercury,the planet in twilight,false,2026-09-26T15:19:02.551Z,3.6,W,-0.14,17.36,false,false,9.75,0
+sulaymaniyahCenter,bino,venus,its phase (crescent),false,2026-09-26T15:19:02.551Z,5.4,SW,-4.55,17.36,false,false,5.33,0
+sulaymaniyahCenter,bino,mars,its red disk,true,2026-09-27T02:19:02.551Z,55.3,E,1.15,17.59,true,true,11.11,0
+sulaymaniyahCenter,bino,jupiter,its 4 Galilean moons,true,2026-09-27T02:19:02.551Z,36.6,E,-1.86,17.59,true,true,17.49,0
+sulaymaniyahCenter,bino,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,56.7,S,0.63,17.36,true,false,20.3,unreachable
+sulaymaniyahCenter,bino,uranus,the planet,true,2026-09-27T00:49:02.551Z,75.5,S,5.64,17.77,true,true,15.67,0
+sulaymaniyahCenter,bino,neptune,the planet,true,2026-09-26T20:49:02.551Z,54.3,S,7.81,17.38,false,false,18.17,79
+sulaymaniyahCenter,bino,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,30.8,S,14.48,17.5,false,false,impossible,
+sulaymaniyahCenter,scope114,moon,craters and seas,true,2026-09-26T20:49:02.551Z,59.4,S,-12.64,17.38,true,true,-4.5,0
+sulaymaniyahCenter,scope114,mercury,the planet in twilight,false,2026-09-26T15:19:02.551Z,3.6,W,-0.14,17.36,false,false,7.96,0
+sulaymaniyahCenter,scope114,venus,its phase (crescent),false,2026-09-26T15:19:02.551Z,5.4,SW,-4.55,17.36,false,false,3.54,0
+sulaymaniyahCenter,scope114,mars,its red disk,true,2026-09-27T02:19:02.551Z,55.3,E,1.15,17.59,true,true,9.31,0
+sulaymaniyahCenter,scope114,jupiter,its 4 Galilean moons,true,2026-09-27T02:19:02.551Z,36.6,E,-1.86,17.59,true,true,15.52,0
+sulaymaniyahCenter,scope114,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,56.7,S,0.63,17.36,true,false,17.92,75
+sulaymaniyahCenter,scope114,uranus,the planet,true,2026-09-27T00:49:02.551Z,75.5,S,5.64,17.77,true,true,13.8,0
+sulaymaniyahCenter,scope114,neptune,the planet,true,2026-09-26T20:49:02.551Z,54.3,S,7.81,17.38,true,true,16.14,0
+sulaymaniyahCenter,scope114,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,30.8,S,14.48,17.5,false,false,impossible,
+sulaymaniyahCenter,scope200,moon,craters and seas,true,2026-09-26T20:49:02.551Z,59.4,S,-12.64,17.38,true,true,-5.72,0
+sulaymaniyahCenter,scope200,mercury,the planet in twilight,false,2026-09-26T15:19:02.551Z,3.6,W,-0.14,17.36,false,false,6.74,0
+sulaymaniyahCenter,scope200,venus,its phase (crescent),false,2026-09-26T15:19:02.551Z,5.4,SW,-4.55,17.36,false,false,2.32,0
+sulaymaniyahCenter,scope200,mars,its red disk,true,2026-09-27T02:19:02.551Z,55.3,E,1.15,17.59,true,true,8.09,0
+sulaymaniyahCenter,scope200,jupiter,its 4 Galilean moons,true,2026-09-27T02:19:02.551Z,36.6,E,-1.86,17.59,true,true,14.25,0
+sulaymaniyahCenter,scope200,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,56.7,S,0.63,17.36,true,true,16.53,0
+sulaymaniyahCenter,scope200,uranus,the planet,true,2026-09-27T00:49:02.551Z,75.5,S,5.64,17.77,true,true,12.55,0
+sulaymaniyahCenter,scope200,neptune,the planet,true,2026-09-26T20:49:02.551Z,54.3,S,7.81,17.38,true,true,14.84,0
+sulaymaniyahCenter,scope200,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,30.8,S,14.48,17.5,false,false,impossible,
+kirkukCenter,eye,moon,craters and seas,true,2026-09-26T20:59:02.551Z,59.5,S,-12.63,17.13,true,true,1.06,0
+kirkukCenter,eye,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,2.5,W,-0.14,17.32,false,false,13.57,0
+kirkukCenter,eye,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.5,SW,-4.55,17.32,false,false,9.1,0
+kirkukCenter,eye,mars,its red disk,true,2026-09-27T02:19:02.551Z,54.5,E,1.15,17.37,true,true,14.97,0
+kirkukCenter,eye,jupiter,its 4 Galilean moons,true,2026-09-27T02:19:02.551Z,35.7,E,-1.86,17.37,true,false,impossible,
+kirkukCenter,eye,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,56.8,S,0.63,17.12,true,false,impossible,
+kirkukCenter,eye,uranus,the planet,true,2026-09-27T00:59:02.551Z,75.6,S,5.64,17.61,false,false,20.23,100
+kirkukCenter,eye,neptune,the planet,true,2026-09-26T20:59:02.551Z,54.4,S,7.81,17.13,false,false,impossible,
+kirkukCenter,eye,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,30.9,S,14.48,17.33,false,false,impossible,
+kirkukCenter,bino,moon,craters and seas,true,2026-09-26T20:59:02.551Z,59.5,S,-12.63,17.13,true,true,-2.71,0
+kirkukCenter,bino,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,2.5,W,-0.14,17.32,false,false,9.75,0
+kirkukCenter,bino,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.5,SW,-4.55,17.32,false,false,5.33,0
+kirkukCenter,bino,mars,its red disk,true,2026-09-27T02:19:02.551Z,54.5,E,1.15,17.37,true,true,11.11,0
+kirkukCenter,bino,jupiter,its 4 Galilean moons,true,2026-09-27T02:19:02.551Z,35.7,E,-1.86,17.37,true,false,17.5,40
+kirkukCenter,bino,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,56.8,S,0.63,17.12,true,false,20.3,unreachable
+kirkukCenter,bino,uranus,the planet,true,2026-09-27T00:59:02.551Z,75.6,S,5.64,17.61,true,true,15.67,0
+kirkukCenter,bino,neptune,the planet,true,2026-09-26T20:59:02.551Z,54.4,S,7.81,17.13,false,false,18.17,89
+kirkukCenter,bino,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,30.9,S,14.48,17.33,false,false,impossible,
+kirkukCenter,scope114,moon,craters and seas,true,2026-09-26T20:59:02.551Z,59.5,S,-12.63,17.13,true,true,-4.5,0
+kirkukCenter,scope114,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,2.5,W,-0.14,17.32,false,false,7.96,0
+kirkukCenter,scope114,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.5,SW,-4.55,17.32,false,false,3.54,0
+kirkukCenter,scope114,mars,its red disk,true,2026-09-27T02:19:02.551Z,54.5,E,1.15,17.37,true,true,9.32,0
+kirkukCenter,scope114,jupiter,its 4 Galilean moons,true,2026-09-27T02:19:02.551Z,35.7,E,-1.86,17.37,true,true,15.53,0
+kirkukCenter,scope114,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,56.8,S,0.63,17.12,true,false,17.92,83
+kirkukCenter,scope114,uranus,the planet,true,2026-09-27T00:59:02.551Z,75.6,S,5.64,17.61,true,true,13.8,0
+kirkukCenter,scope114,neptune,the planet,true,2026-09-26T20:59:02.551Z,54.4,S,7.81,17.13,true,true,16.14,0
+kirkukCenter,scope114,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,30.9,S,14.48,17.33,false,false,impossible,
+kirkukCenter,scope200,moon,craters and seas,true,2026-09-26T20:59:02.551Z,59.5,S,-12.63,17.13,true,true,-5.72,0
+kirkukCenter,scope200,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,2.5,W,-0.14,17.32,false,false,6.74,0
+kirkukCenter,scope200,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,4.5,SW,-4.55,17.32,false,false,2.32,0
+kirkukCenter,scope200,mars,its red disk,true,2026-09-27T02:19:02.551Z,54.5,E,1.15,17.37,true,true,8.09,0
+kirkukCenter,scope200,jupiter,its 4 Galilean moons,true,2026-09-27T02:19:02.551Z,35.7,E,-1.86,17.37,true,true,14.26,0
+kirkukCenter,scope200,saturn,its moon Titan,true,2026-09-26T21:29:02.551Z,56.8,S,0.63,17.12,true,true,16.53,0
+kirkukCenter,scope200,uranus,the planet,true,2026-09-27T00:59:02.551Z,75.6,S,5.64,17.61,true,true,12.55,0
+kirkukCenter,scope200,neptune,the planet,true,2026-09-26T20:59:02.551Z,54.4,S,7.81,17.13,true,true,14.84,0
+kirkukCenter,scope200,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,30.9,S,14.48,17.33,false,false,impossible,
+ramadiCenter,eye,moon,craters and seas,true,2026-09-26T20:59:02.551Z,61.6,S,-12.63,17.28,true,true,1.06,0
+ramadiCenter,eye,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.9,W,-0.14,16.73,false,false,13.57,0
+ramadiCenter,eye,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,6.2,SW,-4.55,16.73,false,false,9.1,0
+ramadiCenter,eye,mars,its red disk,true,2026-09-27T02:29:02.551Z,56.1,E,1.15,17.16,true,true,14.96,0
+ramadiCenter,eye,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,37.1,E,-1.86,17.16,true,false,impossible,
+ramadiCenter,eye,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,58.8,S,0.63,17.23,true,false,impossible,
+ramadiCenter,eye,uranus,the planet,true,2026-09-27T00:59:02.551Z,77.7,S,5.64,17.37,false,false,20.23,100
+ramadiCenter,eye,neptune,the planet,true,2026-09-26T20:59:02.551Z,56.4,S,7.81,17.28,false,false,impossible,
+ramadiCenter,eye,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,32.9,S,14.48,16.91,false,false,impossible,
+ramadiCenter,bino,moon,craters and seas,true,2026-09-26T20:59:02.551Z,61.6,S,-12.63,17.28,true,true,-2.71,0
+ramadiCenter,bino,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.9,W,-0.14,16.73,false,false,9.75,0
+ramadiCenter,bino,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,6.2,SW,-4.55,16.73,false,false,5.33,0
+ramadiCenter,bino,mars,its red disk,true,2026-09-27T02:29:02.551Z,56.1,E,1.15,17.16,true,true,11.11,0
+ramadiCenter,bino,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,37.1,E,-1.86,17.16,true,false,17.48,65
+ramadiCenter,bino,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,58.8,S,0.63,17.23,true,false,20.28,unreachable
+ramadiCenter,bino,uranus,the planet,true,2026-09-27T00:59:02.551Z,77.7,S,5.64,17.37,true,true,15.67,0
+ramadiCenter,bino,neptune,the planet,true,2026-09-26T20:59:02.551Z,56.4,S,7.81,17.28,false,false,18.16,93
+ramadiCenter,bino,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,32.9,S,14.48,16.91,false,false,impossible,
+ramadiCenter,scope114,moon,craters and seas,true,2026-09-26T20:59:02.551Z,61.6,S,-12.63,17.28,true,true,-4.5,0
+ramadiCenter,scope114,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.9,W,-0.14,16.73,false,false,7.96,0
+ramadiCenter,scope114,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,6.2,SW,-4.55,16.73,false,false,3.54,0
+ramadiCenter,scope114,mars,its red disk,true,2026-09-27T02:29:02.551Z,56.1,E,1.15,17.16,true,true,9.31,0
+ramadiCenter,scope114,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,37.1,E,-1.86,17.16,true,true,15.52,0
+ramadiCenter,scope114,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,58.8,S,0.63,17.23,true,false,17.91,87
+ramadiCenter,scope114,uranus,the planet,true,2026-09-27T00:59:02.551Z,77.7,S,5.64,17.37,true,true,13.8,0
+ramadiCenter,scope114,neptune,the planet,true,2026-09-26T20:59:02.551Z,56.4,S,7.81,17.28,true,true,16.13,0
+ramadiCenter,scope114,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,32.9,S,14.48,16.91,false,false,impossible,
+ramadiCenter,scope200,moon,craters and seas,true,2026-09-26T20:59:02.551Z,61.6,S,-12.63,17.28,true,true,-5.72,0
+ramadiCenter,scope200,mercury,the planet in twilight,false,2026-09-26T15:29:02.551Z,3.9,W,-0.14,16.73,false,false,6.74,0
+ramadiCenter,scope200,venus,its phase (crescent),false,2026-09-26T15:29:02.551Z,6.2,SW,-4.55,16.73,false,false,2.32,0
+ramadiCenter,scope200,mars,its red disk,true,2026-09-27T02:29:02.551Z,56.1,E,1.15,17.16,true,true,8.08,0
+ramadiCenter,scope200,jupiter,its 4 Galilean moons,true,2026-09-27T02:29:02.551Z,37.1,E,-1.86,17.16,true,true,14.24,0
+ramadiCenter,scope200,saturn,its moon Titan,true,2026-09-26T21:39:02.551Z,58.8,S,0.63,17.23,true,true,16.52,0
+ramadiCenter,scope200,uranus,the planet,true,2026-09-27T00:59:02.551Z,77.7,S,5.64,17.37,true,true,12.55,0
+ramadiCenter,scope200,neptune,the planet,true,2026-09-26T20:59:02.551Z,56.4,S,7.81,17.28,true,true,14.83,0
+ramadiCenter,scope200,pluto,a faint star-like dot,true,2026-09-26T17:09:02.551Z,32.9,S,14.48,16.91,false,false,impossible,
+rutba,eye,moon,craters and seas,true,2026-09-26T21:09:02.551Z,62.2,S,-12.63,19.21,true,true,1.06,0
+rutba,eye,mercury,the planet in twilight,false,2026-09-26T15:39:02.551Z,4.7,W,-0.14,20.75,false,false,13.57,0
+rutba,eye,venus,its phase (crescent),false,2026-09-26T15:39:02.551Z,7.1,SW,-4.55,20.75,false,false,9.1,0
+rutba,eye,mars,its red disk,true,2026-09-27T02:39:02.551Z,55.6,E,1.15,20.78,true,true,14.96,0
+rutba,eye,jupiter,its 4 Galilean moons,true,2026-09-27T02:39:02.551Z,36.5,E,-1.86,20.78,true,false,impossible,
+rutba,eye,saturn,its moon Titan,true,2026-09-26T21:49:02.551Z,59.4,S,0.63,19.24,true,false,impossible,
+rutba,eye,uranus,the planet,true,2026-09-27T01:09:02.551Z,78.2,S,5.64,20.82,true,true,20.23,0
+rutba,eye,neptune,the planet,true,2026-09-26T21:09:02.551Z,57.1,S,7.81,19.21,false,false,impossible,
+rutba,eye,pluto,a faint star-like dot,true,2026-09-26T17:29:02.551Z,33.6,S,14.48,19.59,false,false,impossible,
+rutba,bino,moon,craters and seas,true,2026-09-26T21:09:02.551Z,62.2,S,-12.63,19.21,true,true,-2.71,0
+rutba,bino,mercury,the planet in twilight,false,2026-09-26T15:39:02.551Z,4.7,W,-0.14,20.75,false,false,9.75,0
+rutba,bino,venus,its phase (crescent),false,2026-09-26T15:39:02.551Z,7.1,SW,-4.55,20.75,false,false,5.33,0
+rutba,bino,mars,its red disk,true,2026-09-27T02:39:02.551Z,55.6,E,1.15,20.78,true,true,11.11,0
+rutba,bino,jupiter,its 4 Galilean moons,true,2026-09-27T02:39:02.551Z,36.5,E,-1.86,20.78,true,true,17.49,0
+rutba,bino,saturn,its moon Titan,true,2026-09-26T21:49:02.551Z,59.4,S,0.63,19.24,true,false,20.28,unreachable
+rutba,bino,uranus,the planet,true,2026-09-27T01:09:02.551Z,78.2,S,5.64,20.82,true,true,15.67,0
+rutba,bino,neptune,the planet,true,2026-09-26T21:09:02.551Z,57.1,S,7.81,19.21,true,true,18.15,0
+rutba,bino,pluto,a faint star-like dot,true,2026-09-26T17:29:02.551Z,33.6,S,14.48,19.59,false,false,impossible,
+rutba,scope114,moon,craters and seas,true,2026-09-26T21:09:02.551Z,62.2,S,-12.63,19.21,true,true,-4.5,0
+rutba,scope114,mercury,the planet in twilight,false,2026-09-26T15:39:02.551Z,4.7,W,-0.14,20.75,false,false,7.96,0
+rutba,scope114,venus,its phase (crescent),false,2026-09-26T15:39:02.551Z,7.1,SW,-4.55,20.75,false,false,3.54,0
+rutba,scope114,mars,its red disk,true,2026-09-27T02:39:02.551Z,55.6,E,1.15,20.78,true,true,9.31,0
+rutba,scope114,jupiter,its 4 Galilean moons,true,2026-09-27T02:39:02.551Z,36.5,E,-1.86,20.78,true,true,15.52,0
+rutba,scope114,saturn,its moon Titan,true,2026-09-26T21:49:02.551Z,59.4,S,0.63,19.24,true,true,17.91,0
+rutba,scope114,uranus,the planet,true,2026-09-27T01:09:02.551Z,78.2,S,5.64,20.82,true,true,13.8,0
+rutba,scope114,neptune,the planet,true,2026-09-26T21:09:02.551Z,57.1,S,7.81,19.21,true,true,16.13,0
+rutba,scope114,pluto,a faint star-like dot,true,2026-09-26T17:29:02.551Z,33.6,S,14.48,19.59,false,false,impossible,
+rutba,scope200,moon,craters and seas,true,2026-09-26T21:09:02.551Z,62.2,S,-12.63,19.21,true,true,-5.72,0
+rutba,scope200,mercury,the planet in twilight,false,2026-09-26T15:39:02.551Z,4.7,W,-0.14,20.75,false,false,6.74,0
+rutba,scope200,venus,its phase (crescent),false,2026-09-26T15:39:02.551Z,7.1,SW,-4.55,20.75,false,false,2.32,0
+rutba,scope200,mars,its red disk,true,2026-09-27T02:39:02.551Z,55.6,E,1.15,20.78,true,true,8.09,0
+rutba,scope200,jupiter,its 4 Galilean moons,true,2026-09-27T02:39:02.551Z,36.5,E,-1.86,20.78,true,true,14.25,0
+rutba,scope200,saturn,its moon Titan,true,2026-09-26T21:49:02.551Z,59.4,S,0.63,19.24,true,true,16.52,0
+rutba,scope200,uranus,the planet,true,2026-09-27T01:09:02.551Z,78.2,S,5.64,20.82,true,true,12.55,0
+rutba,scope200,neptune,the planet,true,2026-09-26T21:09:02.551Z,57.1,S,7.81,19.21,true,true,14.83,0
+rutba,scope200,pluto,a faint star-like dot,true,2026-09-26T17:29:02.551Z,33.6,S,14.48,19.59,false,false,impossible,

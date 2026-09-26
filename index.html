@@ -1,457 +1,394 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Orbit Galaxy — Nineveh Dark Sky Observatory</title>
-  <meta name="description" content="Hybrid Ground-Space Light Pollution Monitoring & AI Sky Correction for Nineveh, Iraq. Team Galaxy — ASI Orbit Hackathon 2026." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛰️</text></svg>" />
+  <title>فريق Galaxy · Team Galaxy — جودة السماء والتلوث الضوئي</title>
+  <meta name="description" content="AI-corrected sky quality, telescope guide and responsible-lighting simulator for Nineveh, Iraq. Team Galaxy — ASI Orbit Hackathon 2026." />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="theme-color" content="#0b1020" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b1020'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%238fb6ff'/%3E%3Cellipse cx='16' cy='16' rx='12' ry='4.5' fill='none' stroke='%23f0be6e' stroke-width='1.6' transform='rotate(-20 16 16)'/%3E%3Ccircle cx='25' cy='7' r='1.6' fill='%23fff'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <style>@keyframes ring-pulse{0%{transform:scale(1);opacity:.6}100%{transform:scale(2.5);opacity:0}}</style>
   <link rel="stylesheet" href="/style.css" />
+  <script>
+    // Apply saved theme before paint (no flash)
+    try { if (localStorage.getItem('orbit-theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}
+  </script>
 </head>
 <body>
+<a class="skip" href="#app" data-i18n="skip">انتقل إلى الأداة</a>
 
-<canvas id="stars"></canvas>
+<!-- Brand mark (reused) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo" viewBox="0 0 32 32">
+    <circle cx="16" cy="16" r="6.2" fill="var(--accent)"/>
+    <ellipse cx="16" cy="16" rx="12.5" ry="4.6" fill="none" stroke="var(--amber)" stroke-width="1.7" transform="rotate(-20 16 16)"/>
+    <circle cx="25.5" cy="6.5" r="1.7" fill="var(--star)"/>
+  </symbol>
+</svg>
 
-<!-- Fixed Language & Theme Toggle -->
-<div class="top-actions">
-  <button class="top-btn" id="btn-theme">☀️</button>
-  <button class="top-btn" id="btn-lang">عربي</button>
-</div>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top" aria-label="فريق Galaxy">
+      <svg class="brand-mark" aria-hidden="true"><use href="#logo"/></svg>
+      <span class="brand-text"><span class="brand-name" data-i18n="brand">فريق Galaxy</span><span class="brand-sub" data-i18n="brandSub"></span></span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#app" data-i18n="navApp">افحص سماءك</a>
+      <a href="#how" data-i18n="navHow">كيف يعمل</a>
+      <a href="#model" data-i18n="navModel">دقة النموذج</a>
+      <a href="#community" data-i18n="navCommunity">المجتمع</a>
+    </nav>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="btn-theme" type="button" data-i18n-aria="themeLight" aria-label="الوضع النهاري">☀️</button>
+      <button class="chip-btn" id="btn-lang" type="button">English</button>
+    </div>
+  </div>
+</header>
 
-<div class="page">
+<main id="top">
 
   <!-- ===== HERO ===== -->
   <section class="hero">
-    <div class="hero-badge" data-i18n="heroBadge">ASI Orbit Hackathon 2026 · Team Galaxy · Challenge 1</div>
-    <h1 class="hero-title" data-i18n-html="heroTitle">Nineveh Dark Sky<br/>Observatory</h1>
-    <p class="hero-desc" data-i18n="heroDesc">We built a ground sensor that sees what NASA satellites miss — then trained an AI to correct the gap. The result: the first corrected light pollution map of Mosul.</p>
-    <div class="hero-cta">
-      <a href="#demo" class="btn btn-glow" data-i18n="heroLaunch">🚀 Launch Live Demo</a>
-      <a href="#problem" class="btn btn-ghost" data-i18n="heroScience">📖 Learn the Science</a>
+    <div class="hero-text">
+      <p class="badge" data-i18n="heroBadge"></p>
+      <h1 data-i18n="heroTitle"></h1>
+      <p class="lead" data-i18n="heroDesc"></p>
+      <div class="cta-row">
+        <button class="btn btn-primary btn-lg" id="cta-locate" type="button" data-i18n="ctaLocate"></button>
+        <a class="btn btn-ghost btn-lg" href="#app" data-i18n="ctaMap"></a>
+      </div>
+      <dl class="trust">
+        <div><dt>5,754</dt><dd data-i18n="trust1"></dd></div>
+        <div><dt>87%</dt><dd data-i18n="trust2"></dd></div>
+        <div><dt>NASA 2024</dt><dd data-i18n="trust3"></dd></div>
+      </dl>
     </div>
-    <div class="scroll-hint" data-i18n="scrollHint">↓ Scroll to explore ↓</div>
+    <figure class="hero-visual" aria-labelledby="hero-cap">
+      <div class="hv-grid">
+        <div class="hv-card">
+          <canvas id="hero-city" aria-hidden="true"></canvas>
+          <div class="hv-label"><span data-i18n="heroCity"></span><strong id="hero-city-v">—</strong></div>
+        </div>
+        <div class="hv-card">
+          <canvas id="hero-dark" aria-hidden="true"></canvas>
+          <div class="hv-label"><span data-i18n="heroDark"></span><strong id="hero-dark-v">—</strong></div>
+        </div>
+      </div>
+      <figcaption id="hero-cap" class="hv-cap" data-i18n="heroCap"></figcaption>
+    </figure>
   </section>
 
-  <!-- ===== THE PROBLEM ===== -->
-  <section id="problem">
-    <div class="sec-header reveal">
-      <div class="sec-label" data-i18n="probLabel">The Problem</div>
-      <h2 data-i18n="probTitle">Why Are Mosul's Stars Disappearing?</h2>
-      <p data-i18n="probDesc">Light pollution doesn't kill stars — it drowns them. City lights scatter through the atmosphere, making the sky glow brighter than the faintest stars. And satellites are underestimating the damage.</p>
-    </div>
-    <div class="flow-grid">
-      <div class="flow-card reveal">
-        <div class="card-icon">🌃</div>
-        <h3 data-i18n="prob1Title">Skyglow Over Cities</h3>
-        <p data-i18n="prob1Desc">Street lights, billboards, and building facades send light upward and sideways. It scatters off air and dust particles, creating a bright dome (Skyglow) that erases thousands of faint stars.</p>
+  <!-- ===== APP ===== -->
+  <section id="app" class="section section-app">
+    <header class="sec-head">
+      <p class="eyebrow" data-i18n="appEyebrow"></p>
+      <h2 data-i18n="appTitle"></h2>
+    </header>
+    <ol class="steps">
+      <li><span class="step-n">1</span><div><strong data-i18n="step1"></strong><span data-i18n="step1d"></span></div></li>
+      <li><span class="step-n">2</span><div><strong data-i18n="step2"></strong><span data-i18n="step2d"></span></div></li>
+      <li><span class="step-n">3</span><div><strong data-i18n="step3"></strong><span data-i18n="step3d"></span></div></li>
+    </ol>
+
+    <div class="app-grid">
+      <!-- Map column -->
+      <div class="panel map-panel">
+        <div class="map-controls">
+          <select class="select" id="site-select" data-i18n-aria="siteLabel" aria-label="اختر موقعاً"></select>
+          <button class="btn btn-secondary btn-sm" id="btn-locate" type="button" data-i18n="locateBtn"></button>
+        </div>
+        <div class="map" id="map" data-i18n-aria="mapLabel" aria-label="خريطة: اضغط على أي نقطة لتوقع جودة سمائها"></div>
+        <div class="map-foot">
+          <ul class="map-legend">
+            <li><span class="lg lg-site"></span><span data-i18n="lgSite"></span></li>
+            <li><span class="lg lg-active"></span><span data-i18n="lgActive"></span></li>
+            <li><span class="lg lg-photo">📷</span><span data-i18n="lgPhoto"></span></li>
+            <li><span class="lg lg-flare"></span><span data-i18n="lgFlare"></span></li>
+          </ul>
+          <div class="map-toggles">
+            <label class="switch"><input type="checkbox" class="toggle toggle-sm" id="nasa-toggle" checked /><span data-i18n="nasaLayer"></span></label>
+            <label class="switch"><input type="checkbox" class="toggle toggle-sm" id="photo-toggle" checked /><span data-i18n="photosLayer"></span></label>
+            <label class="switch"><input type="checkbox" class="toggle toggle-sm" id="heat-toggle" /><span data-i18n="heatLayer"></span></label>
+          </div>
+          <div class="heat-legend" id="heat-legend" hidden>
+            <div class="heat-bar" id="heat-bar"></div>
+            <div class="heat-ends"><span data-i18n="heatLess"></span><span data-i18n="heatMore"></span></div>
+            <p class="heat-status" id="heat-status" aria-live="polite"></p>
+            <div class="heat-actions">
+              <button type="button" class="btn btn-secondary btn-sm" id="heat-worst" data-i18n="heatWorst" disabled></button>
+              <button type="button" class="btn btn-secondary btn-sm" id="heat-dark" disabled></button>
+            </div>
+          </div>
+          <div class="map-views">
+            <button class="link-btn" id="btn-view-mosul" type="button" data-i18n="viewMosul"></button>
+            <button class="link-btn" id="btn-view-iraq" type="button" data-i18n="viewIraq"></button>
+          </div>
+        </div>
       </div>
-      <div class="flow-card reveal">
-        <div class="card-icon">🛰️</div>
-        <h3 data-i18n="prob2Title">Satellites Miss the Full Picture</h3>
-        <p data-i18n="prob2Desc">NASA's VIIRS sensor sees 500–900nm light going up. But modern LED lights emit blue light that scatters sideways — invisible to satellites. Real sky brightness is growing 9.6%/year vs 2% from space.</p>
-      </div>
-      <div class="flow-card reveal">
-        <div class="card-icon">🏜️</div>
-        <h3 data-i18n="prob3Title">Iraq's Dust Makes It Worse</h3>
-        <p data-i18n="prob3Desc">Airborne dust particles act as scattering mirrors for city light. A pristine site 50km from Mosul can be ruined by a single dust storm. No satellite captures this local effect.</p>
+
+      <!-- Results column -->
+      <div class="panel results" aria-busy="true">
+        <div class="res-head">
+          <div class="place" id="place-name">—</div>
+          <div class="status" id="status" role="status" aria-live="polite"><span class="dot"></span><span id="status-text" data-i18n="loadingModel"></span></div>
+        </div>
+        <div class="alert" id="alert" role="status" aria-live="polite" hidden></div>
+
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" id="tab-sky" aria-selected="true" aria-controls="panel-sky"><span class="tab-ic" aria-hidden="true">🌌</span><span data-i18n="tabSky"></span></button>
+          <button class="tab" role="tab" id="tab-guide" aria-selected="false" aria-controls="panel-guide"><span class="tab-ic" aria-hidden="true">🔭</span><span data-i18n="tabGuide"></span></button>
+          <button class="tab" role="tab" id="tab-sim" aria-selected="false" aria-controls="panel-sim"><span class="tab-ic" aria-hidden="true">💡</span><span data-i18n="tabSim"></span></button>
+          <button class="tab" role="tab" id="tab-planets" aria-selected="false" aria-controls="panel-planets"><span class="tab-ic" aria-hidden="true">🪐</span><span data-i18n="tabPlanets"></span></button>
+        </div>
+
+        <!-- Sky quality -->
+        <div class="tab-panel" role="tabpanel" id="panel-sky" aria-labelledby="tab-sky">
+          <div class="now-strip">
+            <div class="now-card" id="now-card"><span class="now-l" data-i18n="nowLabel"></span><strong id="now-v">—</strong><span class="now-s" id="now-s"></span></div>
+            <div class="now-card"><span class="now-l" id="tonight-l"></span><strong id="tonight-v">—</strong><span class="now-s" id="tonight-s"></span></div>
+          </div>
+          <div class="verdict" id="verdict">
+            <p class="verdict-label"><span data-i18n="baseLabel"></span> <span class="muted" data-i18n="baseSub"></span></p>
+            <div class="verdict-top">
+              <div class="bortle-badge" id="v-bortle-badge">—</div>
+              <div class="sky-num-wrap"><span class="sky-num" id="v-ai">—</span><span class="sky-unit">mag/arcsec²</span></div>
+            </div>
+            <p class="plain" id="v-plain"></p>
+            <div class="scale" id="v-scale" role="img" aria-label="">
+              <div class="scale-bar">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                <i class="scale-marker" id="v-scale-marker"></i>
+              </div>
+              <div class="scale-ends"><span data-i18n="scaleDark"></span><span data-i18n="scaleCity"></span></div>
+            </div>
+          </div>
+          <div class="stats stats-4">
+            <div class="stat"><div class="stat-label" data-i18n="stars"></div><div class="stat-val" id="v-stars">—</div></div>
+            <div class="stat"><div class="stat-label" data-i18n="nelm"></div><div class="stat-val" id="v-nelm">—</div></div>
+            <div class="stat"><div class="stat-label" data-i18n="satOnly"></div><div class="stat-val muted-val" id="v-sat">—</div></div>
+            <div class="stat"><div class="stat-label" data-i18n="aiVsSat"></div><div class="stat-val" id="v-delta">—</div></div>
+          </div>
+          <p class="footnote"><span data-i18n="skyUnit"></span> · ± <span id="v-unc">—</span><br /><span id="v-engine"></span><br /><span id="v-updated"></span></p>
+        </div>
+
+        <!-- Telescope guide -->
+        <div class="tab-panel" role="tabpanel" id="panel-guide" aria-labelledby="tab-guide" hidden>
+          <div class="stats stats-4">
+            <div class="stat"><div class="stat-label" data-i18n="gWhen"></div><div class="stat-val sm" id="g-when">—</div></div>
+            <div class="stat"><div class="stat-label" data-i18n="gMoon"></div><div class="stat-val sm" id="g-moon">—</div></div>
+            <div class="stat"><div class="stat-label" data-i18n="gClouds"></div><div class="stat-val sm" id="g-clouds">—</div></div>
+            <div class="stat"><div class="stat-label" data-i18n="gSky"></div><div class="stat-val sm" id="g-sky">—</div></div>
+          </div>
+          <div class="guide">
+            <figure class="compass-wrap">
+              <svg id="compass" viewBox="-125 -125 250 250" role="img" aria-label="Compass"></svg>
+              <figcaption class="legend"><span class="sw sw-dark"></span><span data-i18n="gLegendDark"></span><span class="sw sw-glow"></span><span data-i18n="gLegendGlow"></span></figcaption>
+            </figure>
+            <div class="guide-side">
+              <div class="advice-row">
+                <div class="advice good-box"><span data-i18n="gPoint"></span> <strong id="g-darkest">—</strong></div>
+                <div class="advice bad-box"><span data-i18n="gGlow"></span> <strong id="g-glow">—</strong></div>
+              </div>
+              <h3 class="h3" data-i18n="gTargets"></h3>
+              <div id="g-targets" class="targets"></div>
+            </div>
+          </div>
+          <section class="live-compass" aria-labelledby="lc-title">
+            <div class="lc-head">
+              <div>
+                <h3 id="lc-title" data-i18n="lcTitle"></h3>
+                <p class="muted small" data-i18n="lcDesc"></p>
+              </div>
+              <button type="button" class="btn btn-primary btn-sm" id="lc-start" data-i18n="lcStart"></button>
+            </div>
+            <label class="lc-target"><span data-i18n="lcTarget"></span>
+              <select class="select" id="lc-select"></select></label>
+            <div class="lc-body">
+              <svg id="lc-dial" viewBox="-120 -120 240 240" role="img" aria-labelledby="lc-instr"></svg>
+              <div class="lc-read">
+                <div class="lc-heading"><span data-i18n="lcFacing"></span> <strong id="lc-heading">—</strong></div>
+                <p class="lc-instr" id="lc-instr">—</p>
+                <p class="sr-only" id="lc-sr" aria-live="polite"></p>
+                <p class="muted small" id="lc-alt"></p>
+                <p class="muted small" id="lc-status"></p>
+              </div>
+            </div>
+            <p class="footnote" data-i18n="lcNote"></p>
+          </section>
+        </div>
+
+        <!-- Lighting simulator -->
+        <div class="tab-panel" role="tabpanel" id="panel-sim" aria-labelledby="tab-sim" hidden>
+          <p class="muted" data-i18n="simDesc"></p>
+          <div class="skies">
+            <figure class="sky-card"><canvas id="sky-before-canvas" aria-hidden="true"></canvas><figcaption><span data-i18n="simNow"></span><strong id="sky-before-mag">—</strong></figcaption></figure>
+            <figure class="sky-card"><canvas id="sky-after-canvas" aria-hidden="true"></canvas><figcaption><span data-i18n="simAfter"></span><strong class="good" id="sky-after-mag">—</strong></figcaption></figure>
+          </div>
+          <div class="stats">
+            <div class="stat"><div class="stat-label" data-i18n="simGain"></div><div class="stat-val good" id="ds-gain">—</div></div>
+            <div class="stat"><div class="stat-label" data-i18n="simStars"></div><div class="stat-val" id="ds-stars">—</div></div>
+            <div class="stat"><div class="stat-label" data-i18n="simEnergy"></div><div class="stat-val" id="ds-energy">—</div></div>
+          </div>
+          <h3 class="h3" data-i18n="simControls"></h3>
+          <div class="controls">
+            <label class="control"><span class="c-text"><span class="c-name" data-i18n="ds1Name"></span><span class="c-sub" data-i18n="ds1Sub"></span></span>
+              <input type="range" id="ds-useful" min="0" max="100" value="30" /><output id="ds-useful-v">30%</output></label>
+            <label class="control"><span class="c-text"><span class="c-name" data-i18n="ds2Name"></span><span class="c-sub" data-i18n="ds2Sub"></span></span>
+              <input type="range" id="ds-targeted" min="0" max="100" value="60" /><output id="ds-targeted-v">60%</output></label>
+            <label class="control"><span class="c-text"><span class="c-name" data-i18n="ds3Name"></span><span class="c-sub" data-i18n="ds3Sub"></span></span>
+              <input type="range" id="ds-dimming" min="0" max="50" value="35" /><output id="ds-dimming-v">35%</output></label>
+            <label class="control"><span class="c-text"><span class="c-name" data-i18n="ds4Name"></span></span>
+              <input type="checkbox" class="toggle" id="ds-curfew" checked /></label>
+            <label class="control"><span class="c-text"><span class="c-name" data-i18n="ds5Name"></span><span class="c-sub" data-i18n="ds5Sub"></span></span>
+              <input type="checkbox" class="toggle" id="ds-warm" checked /></label>
+          </div>
+          <p class="footnote"><span data-i18n="simAssume"></span> <strong id="ds-factor">—</strong></p>
+        </div>
+
+        <!-- Planets: solar-system forecast + calibration -->
+        <div class="tab-panel" role="tabpanel" id="panel-planets" aria-labelledby="tab-planets" hidden>
+          <p class="muted" data-i18n="plDesc"></p>
+          <label class="pl-inst"><span data-i18n="plInstrument"></span>
+            <select class="select" id="pl-instrument"></select></label>
+          <div class="pl-list" id="pl-list"></div>
+          <h3 class="h3" id="pl-title">—</h3>
+          <figure class="eyepiece">
+            <canvas id="pl-canvas" role="img" aria-label=""></canvas>
+            <figcaption id="pl-caption" class="muted small"></figcaption>
+          </figure>
+          <div class="calib">
+            <div class="calib-head">
+              <h4 data-i18n="plSlider"></h4>
+              <button type="button" class="btn btn-secondary btn-sm" id="pl-auto"></button>
+            </div>
+            <label class="control">
+              <span class="c-text"><span class="c-name" data-i18n="plSliderName"></span><span class="c-sub" id="pl-slider-sub"></span></span>
+              <input type="range" id="pl-cut-range" min="0" max="100" step="1" value="0" />
+              <output id="pl-cut-v">0%</output>
+            </label>
+            <p class="calib-read" id="pl-read" aria-live="polite"></p>
+          </div>
+          <div class="stats stats-4">
+            <div class="stat"><div class="stat-label" data-i18n="plBest"></div><div class="stat-val sm" id="pl-best">—</div></div>
+            <div class="stat"><div class="stat-label" data-i18n="plMag"></div><div class="stat-val sm" id="pl-mag">—</div></div>
+            <div class="stat"><div class="stat-label" data-i18n="plNeed"></div><div class="stat-val sm" id="pl-need">—</div></div>
+            <div class="stat"><div class="stat-label" data-i18n="plCut"></div><div class="stat-val sm" id="pl-cut">—</div></div>
+          </div>
+          <p class="plain" id="pl-verdict" aria-live="polite"></p>
+          <p class="footnote" data-i18n="plNote"></p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== THE SOLUTION ===== -->
-  <section id="solution">
-    <div class="sec-header reveal">
-      <div class="sec-label" data-i18n="solLabel">Our Solution</div>
-      <h2 data-i18n="solTitle">Ground Sensor + NASA + AI = Truth</h2>
-      <p data-i18n="solDesc">We don't replace satellite data — we correct it. Our ESP32 device measures the sky from the ground, and our AI model learns the gap.</p>
-    </div>
-    <div class="flow-grid">
-      <div class="flow-card reveal">
-        <div class="card-icon">📡</div>
-        <h3 data-i18n="sol1Title">ESP32 Ground Station</h3>
-        <p data-i18n="sol1Desc">TSL2591 light sensor with dual channels (Visible+IR and IR-only), GPS module, gyroscope, and servo gimbal — all in a low-cost IoT package with WiFi streaming.</p>
+  <!-- ===== HOW IT WORKS ===== -->
+  <section id="how" class="section">
+    <header class="sec-head">
+      <p class="eyebrow" data-i18n="howLabel"></p>
+      <h2 data-i18n="howTitle"></h2>
+    </header>
+    <ol class="flow">
+      <li class="card"><span class="card-icon" aria-hidden="true">🛰️</span><h3 data-i18n="how1Title"></h3><p data-i18n="how1Desc"></p></li>
+      <li class="card"><span class="card-icon" aria-hidden="true">📏</span><h3 data-i18n="how2Title"></h3><p data-i18n="how2Desc"></p></li>
+      <li class="card"><span class="card-icon" aria-hidden="true">🧠</span><h3 data-i18n="how3Title"></h3><p data-i18n="how3Desc"></p></li>
+    </ol>
+    <aside class="callout">
+      <h3 data-i18n="whyTitle"></h3>
+      <ul>
+        <li data-i18n="why1"></li>
+        <li data-i18n="why2"></li>
+      </ul>
+    </aside>
+  </section>
+
+  <!-- ===== MODEL ===== -->
+  <section id="model" class="section">
+    <header class="sec-head">
+      <p class="eyebrow" data-i18n="modelLabel"></p>
+      <h2 data-i18n="modelTitle"></h2>
+      <p class="sec-lead" data-i18n="modelDesc"></p>
+    </header>
+    <div class="model-grid">
+      <div class="panel kpi">
+        <div class="kpi-num" id="m-kpi">—</div>
+        <div class="kpi-label" data-i18n="kpiLabel"></div>
+        <dl class="facts">
+          <div><dt data-i18n="mcMae"></dt><dd id="m-mae">—</dd></div>
+          <div><dt data-i18n="mcWithin"></dt><dd id="m-within">—</dd></div>
+          <div><dt data-i18n="mcData"></dt><dd id="m-data">—</dd></div>
+          <div><dt data-i18n="mcAlgo"></dt><dd data-i18n="mcAlgoVal"></dd></div>
+        </dl>
       </div>
-      <div class="flow-card reveal">
-        <div class="card-icon">🌍</div>
-        <h3 data-i18n="sol2Title">NASA Black Marble Data</h3>
-        <p data-i18n="sol2Desc">We pull VIIRS nighttime light data (VNP46A2/A3) and overlay it with atmospheric dust (CAMS AOD), moon phase, and cloud filters to build the satellite baseline.</p>
-      </div>
-      <div class="flow-card reveal">
-        <div class="card-icon">🧠</div>
-        <h3 data-i18n="sol3Title">AI Hybrid Correction</h3>
-        <p data-i18n="sol3Desc">A Random Forest model trained on ground truth learns how satellite readings drift under different LED ratios, dust levels, and lunar conditions — then corrects the map.</p>
+      <div class="panel">
+        <h3 class="h3" data-i18n="mcImportance"></h3>
+        <div id="m-importance" class="bars"></div>
+        <h3 class="h3" data-i18n="mcLimits"></h3>
+        <ul class="limits">
+          <li data-i18n="limit1"></li>
+          <li data-i18n="limit2"></li>
+          <li data-i18n="limit3"></li>
+        </ul>
       </div>
     </div>
   </section>
 
-  <!-- ===== LIVE DEMO ===== -->
-  <section id="demo" class="demo-section">
-    <div class="sec-header reveal">
-      <div class="sec-label" data-i18n="demoLabel">Live Demo</div>
-      <h2 data-i18n="demoTitle">See It Working</h2>
-      <p data-i18n="demoDesc">Pick an observation site in Nineveh and watch the full pipeline — from raw sensor data to AI-corrected sky quality.</p>
+  <!-- ===== COMMUNITY ===== -->
+  <section id="community" class="section">
+    <header class="sec-head">
+      <p class="eyebrow" data-i18n="comLabel"></p>
+      <h2 data-i18n="comTitle"></h2>
+      <p class="sec-lead" data-i18n="comDesc"></p>
+    </header>
+
+    <h3 class="h3" data-i18n="obsTitle"></h3>
+    <p class="footnote" id="obs-note" data-i18n="obsIllustrativeNote" hidden></p>
+    <div id="obs-gallery" class="gallery" tabindex="0" data-i18n-aria="obsTitle" aria-label=""></div>
+
+    <h3 class="h3" data-i18n="learnTitle"></h3>
+    <div class="cards cards-4">
+      <article class="card"><span class="card-icon" aria-hidden="true">🌗</span><h3 data-i18n="learn1Title"></h3><p data-i18n="learn1Desc"></p></article>
+      <article class="card"><span class="card-icon" aria-hidden="true">🧭</span><h3 data-i18n="learn2Title"></h3><p data-i18n="learn2Desc"></p></article>
+      <article class="card"><span class="card-icon" aria-hidden="true">🔭</span><h3 data-i18n="learn3Title"></h3><p data-i18n="learn3Desc"></p></article>
+      <article class="card"><span class="card-icon" aria-hidden="true">💡</span><h3 data-i18n="learn4Title"></h3><p data-i18n="learn4Desc"></p></article>
     </div>
 
-    <div class="demo-box reveal">
-      <!-- Top bar -->
-      <div class="demo-topbar">
-        <div class="demo-topbar-left">
-          <div class="demo-dot green" id="demo-dot"></div>
-          <span class="demo-status" id="demo-status" data-i18n="demoSimulator">SIMULATOR ACTIVE</span>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-          <select class="demo-site-select" id="site-select">
-            <optgroup label="Nineveh Governorate">
-              <option value="mosulCenter" data-i18n="siteMosul">🏙️ Mosul Downtown — Bortle 8</option>
-              <option value="baashiqa" data-i18n="siteBaashiqa">🏘️ Ba'ashiqa Hills — Bortle 5</option>
-              <option value="badush" data-i18n="siteBadush">⛰️ Badush Ridge — Bortle 4</option>
-              <option value="hatra" data-i18n="siteHatra">🏛️ Al-Hatra — Bortle 3</option>
-              <option value="sinjar" data-i18n="siteSinjar">🌌 Mount Sinjar — Bortle 2</option>
-            </optgroup>
-            <optgroup label="Iraq Major Cities">
-              <option value="baghdadCenter" data-i18n="siteBaghdad">🏙️ Baghdad Center — Bortle 8/9</option>
-              <option value="basraCenter" data-i18n="siteBasra">🏙️ Basra — Bortle 8</option>
-              <option value="erbilCenter" data-i18n="siteErbil">🏙️ Erbil — Bortle 8</option>
-              <option value="najafCenter" data-i18n="siteNajaf">🏙️ Najaf Center — Bortle 8</option>
-              <option value="nasiriyahCenter" data-i18n="siteNasiriyah">🏙️ Nasiriyah — Bortle 8</option>
-              <option value="sulaymaniyahCenter" data-i18n="siteSulaymaniyah">🏙️ Sulaymaniyah — Bortle 8</option>
-              <option value="ramadiCenter" data-i18n="siteRamadi">🏙️ Ramadi — Bortle 7</option>
-              <option value="kirkukCenter" data-i18n="siteKirkuk">🏙️ Kirkuk — Bortle 8</option>
-              <option value="rutba" data-i18n="siteRutba">🌌 Ar-Rutbah (Desert) — Bortle 2</option>
-            </optgroup>
-          </select>
-
-          <button class="btn btn-ghost" id="btn-nasa-layer" style="padding:8px 16px;font-size:0.68rem;" data-i18n="demoNASA">🛰️ NASA Overlay</button>
-        </div>
+    <div class="join">
+      <svg class="join-mark" aria-hidden="true"><use href="#logo"/></svg>
+      <h3 data-i18n="joinTitle"></h3>
+      <p data-i18n="joinDesc"></p>
+      <div class="cta-row">
+        <!-- TODO: put the team's real Instagram URL and photo-submission link here (href="#" shows "soon") -->
+        <a class="btn btn-primary" id="link-insta" href="#" target="_blank" rel="noopener" data-i18n="joinInsta"></a>
+        <a class="btn btn-secondary" id="link-send" href="#" target="_blank" rel="noopener" data-i18n="joinSend"></a>
       </div>
-
-      <div class="demo-body">
-
-        <!-- MAP -->
-        <div class="demo-sec-title" data-i18n="secMap">🗺️ Nineveh Observatory Map</div>
-        <div style="display:flex;gap:8px;margin-bottom:12px;">
-           <button class="btn btn-ghost" id="btn-view-mosul" style="padding:6px 12px;font-size:0.7rem;">📍 Mosul</button>
-           <button class="btn btn-ghost" id="btn-view-iraq" style="padding:6px 12px;font-size:0.7rem;">🇮🇶 Iraq</button>
-           <button class="btn btn-ghost" id="btn-view-world" style="padding:6px 12px;font-size:0.7rem;">🌍 World</button>
-        </div>
-        <div class="map-wrap" id="map"></div>
-
-        <div class="divider"></div>
-
-        <!-- AI CORRECTION -->
-        <div class="demo-sec-title" data-i18n="secAI">🧠 AI Hybrid Correction — The Killer KPI</div>
-        <div class="ai-compare">
-          <div class="ai-bar sat">
-            <div class="bar-label" data-i18n="aiSatLabel">Satellite Alone</div>
-            <div class="bar-val" id="v-sat-est">17.76</div>
-            <div class="bar-sub" data-i18n="aiSatSub">mag/arcsec² (optimistic)</div>
-          </div>
-          <div class="ai-bar ai">
-            <div class="bar-label" data-i18n="aiCorrLabel">AI Corrected</div>
-            <div class="bar-val" id="v-ai-est">17.22</div>
-            <div class="bar-sub" data-i18n="aiCorrSub">mag/arcsec² (ground truth)</div>
-          </div>
-        </div>
-        <div class="kpi-highlight">
-          <div class="kpi-num" id="v-kpi">72.1%</div>
-          <div class="kpi-label" data-i18n="aiKPILabel">Error Reduction — AI hybrid model vs satellite alone (MAE)</div>
-        </div>
-
-        <div class="divider"></div>
-
-        <!-- DARKSKY SIMULATOR -->
-        <div class="demo-sec-title" data-i18n="secDarkSky">🌙 DarkSky What-If Simulator</div>
-        <p style="font-size:0.75rem; color:var(--text-dim); margin-bottom:16px;" data-i18n="dsDesc">What happens to Mosul's sky if the city adopts responsible lighting? Drag the sliders and watch the sky transform.</p>
-
-        <!-- BEFORE / AFTER SKY VISUALIZATION -->
-        <div class="sky-viz">
-          <div class="sky-half sky-before">
-            <canvas id="sky-before-canvas" width="400" height="200"></canvas>
-            <div class="sky-overlay-label" data-i18n="dsNow">NOW</div>
-            <div class="sky-mag-badge" id="sky-before-mag">17.30 mag</div>
-            <div class="sky-bortle-badge" id="sky-before-bortle">Bortle 8</div>
-          </div>
-          <div class="sky-divider-line">
-            <span class="sky-divider-arrow">→</span>
-          </div>
-          <div class="sky-half sky-after">
-            <canvas id="sky-after-canvas" width="400" height="200"></canvas>
-            <div class="sky-overlay-label" style="color:#00e676;" data-i18n="dsAfter">AFTER</div>
-            <div class="sky-mag-badge" id="sky-after-mag" style="color:#00e676;">18.18 mag</div>
-            <div class="sky-bortle-badge" id="sky-after-bortle" style="color:#00e676;">Bortle 6</div>
-          </div>
-        </div>
-
-        <!-- Big Impact Numbers -->
-        <div class="ds-impact-hero">
-          <div class="ds-impact-col">
-            <div class="ds-impact-big green" id="ds-gain">+0.88</div>
-            <div class="ds-impact-sub" data-i18n="dsGainLabel">mag/arcsec² darker sky</div>
-          </div>
-          <div class="ds-impact-col">
-            <div class="ds-impact-big" style="color:var(--cyan);" id="ds-stars">+1,240</div>
-            <div class="ds-impact-sub" data-i18n="dsStarsLabel">more visible stars</div>
-          </div>
-          <div class="ds-impact-col">
-            <div class="ds-impact-big" style="color:var(--purple);" id="ds-energy">38%</div>
-            <div class="ds-impact-sub" data-i18n="dsEnergyLabel">energy saved</div>
-          </div>
-        </div>
-
-        <!-- Sliders -->
-        <div class="ds-controls">
-          <div class="ds-row">
-            <span class="ds-icon">💡</span>
-            <div class="ds-info"><div class="ds-name" data-i18n="ds1Name">Turn Off Non-Essential Lights</div><div class="ds-sub" data-i18n="ds1Sub">Decorative, ornamental, facade lighting</div></div>
-            <input type="range" id="ds-useful" min="0" max="100" value="30" />
-            <span class="ds-val" id="ds-useful-v">30%</span>
-          </div>
-          <div class="ds-row">
-            <span class="ds-icon">🔽</span>
-            <div class="ds-info"><div class="ds-name" data-i18n="ds2Name">Full Cutoff Downward Shielding</div><div class="ds-sub" data-i18n="ds2Sub">Stop upward light spill from streetlamps</div></div>
-            <input type="range" id="ds-targeted" min="0" max="100" value="60" />
-            <span class="ds-val" id="ds-targeted-v">60%</span>
-          </div>
-          <div class="ds-row">
-            <span class="ds-icon">🔅</span>
-            <div class="ds-info"><div class="ds-name" data-i18n="ds3Name">Dim Municipal Lights</div><div class="ds-sub" data-i18n="ds3Sub">Max 50% — physically limited to +0.75 mag</div></div>
-            <input type="range" id="ds-dimming" min="0" max="50" value="35" />
-            <span class="ds-val" id="ds-dimming-v">35%</span>
-          </div>
-          <div class="ds-row">
-            <span class="ds-icon">🕛</span>
-            <div class="ds-info"><div class="ds-name" data-i18n="ds4Name">Post-Midnight Commercial Curfew</div></div>
-            <input type="checkbox" class="ds-toggle" id="ds-curfew" checked />
-          </div>
-          <div class="ds-row">
-            <span class="ds-icon">🟠</span>
-            <div class="ds-info"><div class="ds-name" data-i18n="ds5Name">Switch to 2200K Warm Amber LEDs</div><div class="ds-sub" data-i18n="ds5Sub">Replaces blue 5000K — less Rayleigh scatter</div></div>
-            <input type="checkbox" class="ds-toggle" id="ds-warm" checked />
-          </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <!-- AUTO-CALIBRATION SYSTEM -->
-        <div class="demo-sec-title" data-i18n="secAutoCalib">🎯 Auto-Calibration System</div>
-        <p style="font-size:0.75rem; color:var(--text-dim); margin-bottom:16px;" data-i18n="calibDesc">Define target sky quality thresholds and mathematically compute the required municipal lighting reduction and expected star visibility.</p>
-
-        <div class="calib-card">
-          <!-- Step 1: Selected Location from Map & In-Card Switcher -->
-          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border);">
-            <div style="flex:1;min-width:240px;">
-              <span class="calib-sublabel" data-i18n="calibStep1">Step 1: Choose Location (from Map or List)</span>
-              <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap;">
-                <select class="demo-site-select" id="calib-site-select" style="min-width:220px;padding:8px 12px;font-size:0.75rem;">
-                  <optgroup label="Nineveh Governorate">
-                    <option value="mosulCenter" selected>🏙️ Mosul Downtown — 17.00 mag (Bortle 8)</option>
-                    <option value="baashiqa">🏘️ Ba'ashiqa Hills — 19.60 mag (Bortle 5)</option>
-                    <option value="badush">⛰️ Badush Ridge — 20.75 mag (Bortle 4)</option>
-                    <option value="hatra">🏛️ Al-Hatra — 21.40 mag (Bortle 3)</option>
-                    <option value="sinjar">🌌 Mount Sinjar — 21.85 mag (Bortle 2)</option>
-                  </optgroup>
-                  <optgroup label="Iraq Major Cities">
-                    <option value="baghdadCenter">🏙️ Baghdad Downtown — 16.80 mag (Bortle 9)</option>
-                    <option value="basraCenter">🏙️ Basra Center — 17.10 mag (Bortle 8)</option>
-                    <option value="erbilCenter">🏙️ Erbil Citadel — 17.50 mag (Bortle 8)</option>
-                    <option value="najafCenter">🏙️ Najaf Center — 17.60 mag (Bortle 8)</option>
-                    <option value="nasiriyahCenter">🏙️ Nasiriyah — 17.80 mag (Bortle 8)</option>
-                    <option value="sulaymaniyahCenter">🏙️ Sulaymaniyah — 17.40 mag (Bortle 8)</option>
-                    <option value="ramadiCenter">🏙️ Ramadi — 18.20 mag (Bortle 7)</option>
-                    <option value="kirkukCenter">🏙️ Kirkuk — 17.50 mag (Bortle 8)</option>
-                    <option value="rutba">🌌 Ar-Rutbah Desert — 21.90 mag (Bortle 2)</option>
-                  </optgroup>
-                </select>
-                <a href="#map" class="btn btn-ghost" style="padding:6px 12px;font-size:0.7rem;white-space:nowrap;" data-i18n="calibPickMap">🗺️ Pick on Map</a>
-              </div>
-            </div>
-
-            <div class="calib-current-display" style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
-              <span class="calib-sublabel" data-i18n="calibCurrentLabel">Current Sky Brightness (B_old):</span>
-              <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
-                <div class="calib-badge"><span id="calib-current-val">17.00</span> mag/arcsec²</div>
-                <div class="calib-badge-sub" id="calib-current-bortle">Bortle 8</div>
-                <div class="calib-badge-sub" id="calib-current-nelm">NELM 3.28</div>
-              </div>
-              <div class="calib-coords-sub" id="calib-current-coords" style="font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);">📍 36.3587°N, 43.1307°E · Alt 223m</div>
-            </div>
-          </div>
-
-          <!-- Step 2: Choose Target Planet -->
-          <div class="calib-target-wrap" style="width:100%;">
-            <label for="calib-target-select" class="calib-sublabel" data-i18n="calibStep2">Step 2: Choose Target Planet to Calibrate For:</label>
-            <select class="demo-site-select calib-select" id="calib-target-select" style="width:100%;margin-top:6px;">
-              <option value="19.80" data-planet="mercury" data-i18n="calibOptMercury">🪨 Mercury (عطارد) — Craters & Rocky Basin · 19.80 mag</option>
-              <option value="18.80" data-planet="venus" data-i18n="calibOptVenus">🌕 Venus (الزهرة) — Sulfuric Atmosphere & Crescent · 18.80 mag</option>
-              <option value="19.20" data-planet="earth" data-i18n="calibOptEarth">🌍 Earth & Moon (الأرض والقمر) — Oceans & Rotating Clouds · 19.20 mag</option>
-              <option value="20.20" data-planet="mars" data-i18n="calibOptMars">🔴 Mars (المريخ) — Polar Ice Caps & Surface Maria · 20.20 mag</option>
-              <option value="20.00" data-planet="jupiter" data-i18n="calibOptJupiter" selected>🌕 Jupiter (المشتري) — Cloud Belts & Red Spot · 20.00 mag</option>
-              <option value="20.50" data-planet="saturn" data-i18n="calibOptSaturn">🪐 Saturn (زحل) — Rings & Cassini Division · 20.50 mag</option>
-              <option value="21.00" data-planet="uranus" data-i18n="calibOptUranus">🔵 Uranus (أورانوس) — Aquamarine Giant & Tilt · 21.00 mag</option>
-              <option value="21.50" data-planet="neptune" data-i18n="calibOptNeptune">🔷 Neptune (نبتون) — Deep Azure & Methane Storms · 21.50 mag</option>
-              <option value="21.85" data-planet="pluto" data-i18n="calibOptPluto">🪐 Pluto (بلوتو) — Nitrogen Heart Glacier · 21.85 mag</option>
-            </select>
-          </div>
-
-          <!-- Interactive 3D Planet Telescope Simulator -->
-          <div class="planet-viewport-container">
-            <div class="planet-viewport-header">
-              <div class="planet-header-title">
-                <span class="pulse-optic-dot"></span>
-                <span data-i18n="planetSimTitle">🔭 Live Telescope Viewport (Simulation)</span>
-              </div>
-              <div class="planet-clarity-badge" id="planet-clarity-badge">
-                Clarity: <span id="planet-clarity-pct" style="font-family:var(--mono);font-weight:800;color:var(--cyan);">28%</span>
-              </div>
-            </div>
-
-            <div class="planet-canvas-wrap">
-              <canvas id="planet-canvas" width="600" height="250"></canvas>
-              
-              <!-- Eyepiece overlay HUD -->
-              <div class="eyepiece-overlay">
-                <div class="eyepiece-target-info">
-                  <div class="eyepiece-target-name" id="eyepiece-target-name">Jupiter · كوكب المشتري</div>
-                  <div class="eyepiece-target-sub" id="eyepiece-site-sub">Mosul Downtown (17.00 mag/arcsec²)</div>
-                </div>
-                <div class="eyepiece-condition" id="eyepiece-condition">
-                  ⚠️ Severe Skyglow Blur — Low Planetary Contrast
-                </div>
-              </div>
-
-              <!-- Reticle corners for high-tech observatory feel -->
-              <div class="reticle-corner top-left"></div>
-              <div class="reticle-corner top-right"></div>
-              <div class="reticle-corner bottom-left"></div>
-              <div class="reticle-corner bottom-right"></div>
-            </div>
-
-            <!-- View Mode Switch: Current Location vs Calibrated Sky -->
-            <div class="planet-view-mode-bar">
-              <button class="planet-mode-btn active" id="btn-mode-current" data-i18n="planetModeCurrent">
-                📍 Current Sky at Site (B_old)
-              </button>
-              <button class="planet-mode-btn" id="btn-mode-calibrated" data-i18n="planetModeCalib">
-                ✨ After Auto-Calibration (B_target)
-              </button>
-            </div>
-
-            <!-- Telescope Guidance, Coordinates & Mount Calibration Panel -->
-            <div class="tele-guidance-panel">
-              <div class="tele-guidance-header">
-                <div class="tele-guidance-title">
-                  <span data-i18n="teleGuidanceTitle">🔭 Telescope Guidance, Coordinates & Mount Calibration</span>
-                </div>
-                <div class="tele-guide-badge" id="tele-val-status">🟢 CALIBRATED · OPTIMAL CONTRAST</div>
-              </div>
-
-              <div class="tele-guidance-grid">
-                <!-- Celestial Coordinates -->
-                <div class="tele-guidance-box">
-                  <div class="tele-box-title" data-i18n="teleCoordTitle">Celestial Coordinates (Ephemeris)</div>
-                  <div class="tele-guide-row">
-                    <span class="tele-guide-lbl" data-i18n="teleRa">Right Ascension (RA):</span>
-                    <span class="tele-guide-val cyan" id="tele-val-ra">03h 48m 14s</span>
-                  </div>
-                  <div class="tele-guide-row">
-                    <span class="tele-guide-lbl" data-i18n="teleDec">Declination (Dec):</span>
-                    <span class="tele-guide-val cyan" id="tele-val-dec">+19° 24' 10"</span>
-                  </div>
-                  <div class="tele-guide-row">
-                    <span class="tele-guide-lbl" data-i18n="teleAlt">Altitude (Alt):</span>
-                    <span class="tele-guide-val green" id="tele-val-alt">+54.2° (High Elevation)</span>
-                  </div>
-                  <div class="tele-guide-row">
-                    <span class="tele-guide-lbl" data-i18n="teleAz">Azimuth (Az):</span>
-                    <span class="tele-guide-val" id="tele-val-az">148.5° (SSE)</span>
-                  </div>
-                </div>
-
-                <!-- Mount Auto-Calibration -->
-                <div class="tele-guidance-box">
-                  <div class="tele-box-title" data-i18n="teleMountTitle">Mount Auto-Calibration</div>
-                  <div class="tele-guide-row">
-                    <span class="tele-guide-lbl" data-i18n="telePolar">Polar Alignment:</span>
-                    <span class="tele-guide-val" id="tele-val-polar">36.36° N (Polar Wedge)</span>
-                  </div>
-                  <div class="tele-guide-row">
-                    <span class="tele-guide-lbl" data-i18n="teleTrack">Tracking Rate:</span>
-                    <span class="tele-guide-val green" id="tele-val-track">Sidereal Rate (15.041"/s)</span>
-                  </div>
-                  <div class="tele-guide-row">
-                    <span class="tele-guide-lbl" data-i18n="teleWindow">Optimal Window:</span>
-                    <span class="tele-guide-val cyan" id="tele-val-window">21:30 - 03:00</span>
-                  </div>
-                  <div class="tele-guide-row">
-                    <span class="tele-guide-lbl">Encoder Offset:</span>
-                    <span class="tele-guide-val" style="color:var(--text-dim);">Δθ &lt; 0.012° (Calibrated)</span>
-                  </div>
-                </div>
-
-                <!-- Optical Guidance & Filter Selection -->
-                <div class="tele-guidance-box">
-                  <div class="tele-box-title" data-i18n="teleOpticTitle">Optical Guidance & Filters</div>
-                  <div class="tele-guide-row">
-                    <span class="tele-guide-lbl" data-i18n="teleFilter">Recommended Filter:</span>
-                    <span class="tele-guide-val text-amber" id="tele-val-filter">UHC / Light Pollution Yellow #8</span>
-                  </div>
-                  <div class="tele-guide-row">
-                    <span class="tele-guide-lbl" data-i18n="teleEyepiece">Eyepiece & Power:</span>
-                    <span class="tele-guide-val cyan" id="tele-val-eyepiece">9mm Wide-Field + 2x Barlow (244x)</span>
-                  </div>
-                  <div class="tele-guide-row">
-                    <span class="tele-guide-lbl">Aperture Target:</span>
-                    <span class="tele-guide-val" style="color:var(--text-bright);">8" (200mm) Diffraction Limited</span>
-                  </div>
-                  <div class="tele-guide-row">
-                    <span class="tele-guide-lbl">Focus Assist:</span>
-                    <span class="tele-guide-val green">Auto-Collimated (0.0 EV)</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div style="margin: 18px 0 20px;">
-            <button class="btn btn-glow" id="btn-calc-calib" style="width: 100%; justify-content: center; font-size: 0.85rem;" data-i18n="calibBtn">
-              ⚡ Step 3: Calculate Auto-Calibration
-            </button>
-          </div>
-
-          <!-- Calibration Results Display -->
-          <div class="calib-results">
-            <div class="calib-result-cell">
-              <div class="calib-res-label" data-i18n="calibResReduction">Required Lighting Reduction:</div>
-              <div class="calib-res-val amber" id="calib-res-reduction">36.90%</div>
-              <div class="calib-res-sub" data-i18n="calibResReductionSub">Municipal flux dimming</div>
-            </div>
-
-            <div class="calib-result-cell">
-              <div class="calib-res-label" data-i18n="calibResNELM">Expected NELM (Faintest Star Visible):</div>
-              <div class="calib-res-val green" id="calib-res-nelm">3.54</div>
-              <div class="calib-res-sub" data-i18n="calibResNELMSub">Unihedron visual limit</div>
-            </div>
-
-            <div class="calib-result-cell">
-              <div class="calib-res-label" data-i18n="calibResTarget">Target Sky Quality:</div>
-              <div class="calib-res-val cyan" id="calib-res-target">17.50 mag/arcsec²</div>
-              <div class="calib-res-sub" data-i18n="calibResTargetSub">Zenith surface brightness</div>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- /demo-body -->
-    </div><!-- /demo-box -->
+    </div>
   </section>
+</main>
 
-  <!-- ===== FOOTER ===== -->
-  <footer class="footer" data-i18n="footer">
-    Team Galaxy · ASI Orbit Hackathon 2026 · Challenge 1: Light Pollution & Dark Sky
-  </footer>
-
-</div><!-- /page -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="foot-brand">
+      <a class="brand" href="#top"><svg class="brand-mark" aria-hidden="true"><use href="#logo"/></svg><span class="brand-name" data-i18n="brand"></span></a>
+      <p data-i18n="footAbout"></p>
+    </div>
+    <div>
+      <h4 data-i18n="footData"></h4>
+      <ul>
+        <li>Globe at Night (NOIRLab)</li>
+        <li>NASA Black Marble VNP46A4 · GIBS</li>
+        <li>NASA JPL · Open-Meteo · OpenStreetMap</li>
+      </ul>
+    </div>
+    <div>
+      <h4 data-i18n="footTeam"></h4>
+      <p data-i18n="footer"></p>
+    </div>
+  </div>
+</footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module" src="/src/main.js"></script>

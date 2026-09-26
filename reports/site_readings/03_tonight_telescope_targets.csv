@@ -1,0 +1,150 @@
+﻿site_key,object,name_en,name_ar,type,altitude_deg,direction,effective_sqm,needs_sqm,visible
+mosulCenter,Albireo,Albireo (double star),منقار الدجاجة (نجم مزدوج),double,81.3,S,16.24,16,true
+mosulCenter,Mizar,Mizar & Alcor,المئزر والسها,double,26.7,NW,15.62,16,false
+mosulCenter,M57,Ring Nebula,السديم الحلقي,nebula,79.6,W,16.27,18.5,false
+mosulCenter,M27,Dumbbell Nebula,سديم الدمبل,nebula,75.8,S,16.18,19,false
+mosulCenter,M13,Hercules Cluster,عنقود هرقل,cluster,54.2,W,16.04,18.5,false
+mosulCenter,M11,Wild Duck Cluster,عنقود البطة البرية,cluster,45.8,S,15.78,19,false
+mosulCenter,M22,M22 Globular,العنقود الكروي M22,cluster,27.8,S,15.44,18.5,false
+mosulCenter,NGC869,Double Cluster,العنقود المزدوج,cluster,25.1,NE,15,18.5,false
+mosulCenter,M8,Lagoon Nebula,سديم البحيرة,nebula,25,SW,14.97,19,false
+mosulCenter,M51,Whirlpool Galaxy,المجرة الدوامية,galaxy,24,NW,15.54,20.5,false
+mosulCenter,M31,Andromeda Galaxy,مجرة المرأة المسلسلة,galaxy,33,NE,14.32,19.5,false
+baashiqa,Albireo,Albireo (double star),منقار الدجاجة (نجم مزدوج),double,81.2,S,16.73,16,true
+baashiqa,Mizar,Mizar & Alcor,المئزر والسها,double,26.7,NW,16,16,false
+baashiqa,M57,Ring Nebula,السديم الحلقي,nebula,79.4,W,16.72,18.5,false
+baashiqa,M27,Dumbbell Nebula,سديم الدمبل,nebula,75.8,S,16.66,19,false
+baashiqa,M13,Hercules Cluster,عنقود هرقل,cluster,54,W,16.42,18.5,false
+baashiqa,NGC869,Double Cluster,العنقود المزدوج,cluster,25.3,NE,16.25,18.5,false
+baashiqa,M11,Wild Duck Cluster,عنقود البطة البرية,cluster,45.6,S,16.26,19,false
+baashiqa,M22,M22 Globular,العنقود الكروي M22,cluster,27.7,S,15.92,18.5,false
+baashiqa,M8,Lagoon Nebula,سديم البحيرة,nebula,24.9,SW,15.33,19,false
+baashiqa,M31,Andromeda Galaxy,مجرة المرأة المسلسلة,galaxy,33.2,NE,15.51,19.5,false
+baashiqa,M51,Whirlpool Galaxy,المجرة الدوامية,galaxy,24,NW,15.92,20.5,false
+badush,Albireo,Albireo (double star),منقار الدجاجة (نجم مزدوج),double,81.1,S,18.52,16,true
+badush,Mizar,Mizar & Alcor,المئزر والسها,double,26.9,NW,18.06,16,true
+badush,M57,Ring Nebula,السديم الحلقي,nebula,79.6,W,18.68,18.5,true
+badush,M13,Hercules Cluster,عنقود هرقل,cluster,54.2,W,18.56,18.5,true
+badush,M27,Dumbbell Nebula,سديم الدمبل,nebula,75.6,S,18.4,19,false
+badush,NGC869,Double Cluster,العنقود المزدوج,cluster,25.3,NE,17.84,18.5,false
+badush,M11,Wild Duck Cluster,عنقود البطة البرية,cluster,45.6,S,17.74,19,false
+badush,M8,Lagoon Nebula,سديم البحيرة,nebula,24.8,SW,18.02,19,false
+badush,M22,M22 Globular,العنقود الكروي M22,cluster,27.6,S,17.29,18.5,false
+badush,M31,Andromeda Galaxy,مجرة المرأة المسلسلة,galaxy,33.1,NE,17.13,19.5,false
+badush,M51,Whirlpool Galaxy,المجرة الدوامية,galaxy,24.2,NW,17.99,20.5,false
+hatra,Albireo,Albireo (double star),منقار الدجاجة (نجم مزدوج),double,82.1,S,18.08,16,true
+hatra,Mizar,Mizar & Alcor,المئزر والسها,double,26.4,NW,17.7,16,true
+hatra,M57,Ring Nebula,السديم الحلقي,nebula,80.1,W,18.08,18.5,false
+hatra,M13,Hercules Cluster,عنقود هرقل,cluster,54.3,W,18.01,18.5,false
+hatra,M27,Dumbbell Nebula,سديم الدمبل,nebula,76.4,S,18.06,19,false
+hatra,M11,Wild Duck Cluster,عنقود البطة البرية,cluster,46.6,S,17.93,19,false
+hatra,M22,M22 Globular,العنقود الكروي M22,cluster,28.7,S,17.71,18.5,false
+hatra,NGC869,Double Cluster,العنقود المزدوج,cluster,24.3,NE,17.45,18.5,false
+hatra,M8,Lagoon Nebula,سديم البحيرة,nebula,25.9,SW,17.67,19,false
+hatra,M31,Andromeda Galaxy,مجرة المرأة المسلسلة,galaxy,32.3,NE,16.74,19.5,false
+hatra,M51,Whirlpool Galaxy,المجرة الدوامية,galaxy,23.8,NW,17.63,20.5,false
+hatra,MWcore,Milky Way core,قلب درب التبانة,milkyway,20,SW,17.48,20.5,false
+sinjar,Albireo,Albireo (double star),منقار الدجاجة (نجم مزدوج),double,81,SW,18.76,16,true
+sinjar,Mizar,Mizar & Alcor,المئزر والسها,double,26.1,NW,18.18,16,true
+sinjar,M57,Ring Nebula,السديم الحلقي,nebula,78.7,W,18.79,18.5,true
+sinjar,M13,Hercules Cluster,عنقود هرقل,cluster,53.2,W,18.69,18.5,true
+sinjar,M27,Dumbbell Nebula,سديم الدمبل,nebula,76.1,S,18.51,19,false
+sinjar,NGC869,Double Cluster,العنقود المزدوج,cluster,25.7,NE,18.29,18.5,false
+sinjar,M11,Wild Duck Cluster,عنقود البطة البرية,cluster,45.4,S,17.85,19,false
+sinjar,M8,Lagoon Nebula,سديم البحيرة,nebula,24.6,SW,18.1,19,false
+sinjar,M22,M22 Globular,العنقود الكروي M22,cluster,27.5,S,17.4,18.5,false
+sinjar,M31,Andromeda Galaxy,مجرة المرأة المسلسلة,galaxy,33.9,NE,17.55,19.5,false
+sinjar,M51,Whirlpool Galaxy,المجرة الدوامية,galaxy,23.3,NW,18.1,20.5,false
+baghdadCenter,Albireo,Albireo (double star),منقار الدجاجة (نجم مزدوج),double,84.5,S,16.17,16,true
+baghdadCenter,Mizar,Mizar & Alcor,المئزر والسها,double,25.1,NW,14.76,16,false
+baghdadCenter,M57,Ring Nebula,السديم الحلقي,nebula,81.1,W,16.13,18.5,false
+baghdadCenter,M27,Dumbbell Nebula,سديم الدمبل,nebula,78.2,SE,16,19,false
+baghdadCenter,M13,Hercules Cluster,عنقود هرقل,cluster,54.4,W,15.82,18.5,false
+baghdadCenter,M11,Wild Duck Cluster,عنقود البطة البرية,cluster,49,S,15.82,19,false
+baghdadCenter,M22,M22 Globular,العنقود الكروي M22,cluster,31,S,15.55,18.5,false
+baghdadCenter,NGC869,Double Cluster,العنقود المزدوج,cluster,22,NE,14.75,18.5,false
+baghdadCenter,M8,Lagoon Nebula,سديم البحيرة,nebula,28.2,SW,14.83,19,false
+baghdadCenter,M31,Andromeda Galaxy,مجرة المرأة المسلسلة,galaxy,30.5,NE,14.12,19.5,false
+baghdadCenter,M51,Whirlpool Galaxy,المجرة الدوامية,galaxy,22.8,NW,14.68,20.5,false
+baghdadCenter,MWcore,Milky Way core,قلب درب التبانة,milkyway,22.4,SW,14.62,20.5,false
+basraCenter,Albireo,Albireo (double star),منقار الدجاجة (نجم مزدوج),double,86.8,SW,16.04,16,true
+basraCenter,Mizar,Mizar & Alcor,المئزر والسها,double,22.4,NW,14.71,16,false
+basraCenter,M57,Ring Nebula,السديم الحلقي,nebula,79.8,W,15.99,18.5,false
+basraCenter,M27,Dumbbell Nebula,سديم الدمبل,nebula,81.1,SE,15.9,19,false
+basraCenter,M13,Hercules Cluster,عنقود هرقل,cluster,52.7,W,15.69,18.5,false
+basraCenter,M11,Wild Duck Cluster,عنقود البطة البرية,cluster,51.4,S,15.57,19,false
+basraCenter,M22,M22 Globular,العنقود الكروي M22,cluster,33.5,S,15.27,18.5,false
+basraCenter,M8,Lagoon Nebula,سديم البحيرة,nebula,30.5,SW,15.2,19,false
+basraCenter,NGC869,Double Cluster,العنقود المزدوج,cluster,20.2,NE,14.39,18.5,false
+basraCenter,MWcore,Milky Way core,قلب درب التبانة,milkyway,24.6,SW,15.04,20.5,false
+basraCenter,M31,Andromeda Galaxy,مجرة المرأة المسلسلة,galaxy,29.7,NE,13.84,19.5,false
+basraCenter,M51,Whirlpool Galaxy,المجرة الدوامية,galaxy,20.3,NW,14.62,20.5,false
+erbilCenter,Albireo,Albireo (double star),منقار الدجاجة (نجم مزدوج),double,81.2,S,16.77,16,true
+erbilCenter,Mizar,Mizar & Alcor,المئزر والسها,double,26.2,NW,15.44,16,false
+erbilCenter,M57,Ring Nebula,السديم الحلقي,nebula,79,W,16.79,18.5,false
+erbilCenter,M27,Dumbbell Nebula,سديم الدمبل,nebula,76.2,S,16.71,19,false
+erbilCenter,M13,Hercules Cluster,عنقود هرقل,cluster,53.5,W,16.57,18.5,false
+erbilCenter,M11,Wild Duck Cluster,عنقود البطة البرية,cluster,45.7,S,16.34,19,false
+erbilCenter,M22,M22 Globular,العنقود الكروي M22,cluster,27.8,S,16.01,18.5,false
+erbilCenter,NGC869,Double Cluster,العنقود المزدوج,cluster,25.4,NE,15.56,18.5,false
+erbilCenter,M8,Lagoon Nebula,سديم البحيرة,nebula,24.9,SW,15.6,19,false
+erbilCenter,M31,Andromeda Galaxy,مجرة المرأة المسلسلة,galaxy,33.5,NE,14.88,19.5,false
+erbilCenter,M51,Whirlpool Galaxy,المجرة الدوامية,galaxy,23.4,NW,15.34,20.5,false
+najafCenter,Albireo,Albireo (double star),منقار الدجاجة (نجم مزدوج),double,85.8,S,16.38,16,true
+najafCenter,Mizar,Mizar & Alcor,المئزر والسها,double,24.1,NW,15.57,16,false
+najafCenter,M57,Ring Nebula,السديم الحلقي,nebula,81,W,16.38,18.5,false
+najafCenter,M13,Hercules Cluster,عنقود هرقل,cluster,54,W,16.3,18.5,false
+najafCenter,M27,Dumbbell Nebula,سديم الدمبل,nebula,79.4,SE,16.3,19,false
+najafCenter,M22,M22 Globular,العنقود الكروي M22,cluster,32.3,S,16.07,18.5,false
+najafCenter,M11,Wild Duck Cluster,عنقود البطة البرية,cluster,50.3,S,16.25,19,false
+najafCenter,M8,Lagoon Nebula,سديم البحيرة,nebula,29.5,SW,16.03,19,false
+najafCenter,NGC869,Double Cluster,العنقود المزدوج,cluster,20.9,NE,14.72,18.5,false
+najafCenter,MWcore,Milky Way core,قلب درب التبانة,milkyway,23.6,SW,15.89,20.5,false
+najafCenter,M51,Whirlpool Galaxy,المجرة الدوامية,galaxy,21.9,NW,15.49,20.5,false
+najafCenter,M31,Andromeda Galaxy,مجرة المرأة المسلسلة,galaxy,29.8,NE,14.14,19.5,false
+sulaymaniyahCenter,Albireo,Albireo (double star),منقار الدجاجة (نجم مزدوج),double,82.1,S,16.93,16,true
+sulaymaniyahCenter,Mizar,Mizar & Alcor,المئزر والسها,double,26.2,NW,15.53,16,false
+sulaymaniyahCenter,M57,Ring Nebula,السديم الحلقي,nebula,80,W,16.88,18.5,false
+sulaymaniyahCenter,M27,Dumbbell Nebula,سديم الدمبل,nebula,76.5,S,16.89,19,false
+sulaymaniyahCenter,M13,Hercules Cluster,عنقود هرقل,cluster,54.1,W,16.57,18.5,false
+sulaymaniyahCenter,M11,Wild Duck Cluster,عنقود البطة البرية,cluster,46.6,S,16.6,19,false
+sulaymaniyahCenter,M22,M22 Globular,العنقود الكروي M22,cluster,28.6,S,16.31,18.5,false
+sulaymaniyahCenter,NGC869,Double Cluster,العنقود المزدوج,cluster,24.4,NE,15.72,18.5,false
+sulaymaniyahCenter,M8,Lagoon Nebula,سديم البحيرة,nebula,25.8,SW,15.8,19,false
+sulaymaniyahCenter,M31,Andromeda Galaxy,مجرة المرأة المسلسلة,galaxy,32.4,NE,15.05,19.5,false
+sulaymaniyahCenter,M51,Whirlpool Galaxy,المجرة الدوامية,galaxy,23.6,NW,15.44,20.5,false
+kirkukCenter,Albireo,Albireo (double star),منقار الدجاجة (نجم مزدوج),double,81.8,SW,16.73,16,true
+kirkukCenter,Mizar,Mizar & Alcor,المئزر والسها,double,25.4,NW,15.36,16,false
+kirkukCenter,M57,Ring Nebula,السديم الحلقي,nebula,78.8,W,16.78,18.5,false
+kirkukCenter,M27,Dumbbell Nebula,سديم الدمبل,nebula,76.9,S,16.74,19,false
+kirkukCenter,M13,Hercules Cluster,عنقود هرقل,cluster,53,W,16.6,18.5,false
+kirkukCenter,M11,Wild Duck Cluster,عنقود البطة البرية,cluster,46.3,S,16.45,19,false
+kirkukCenter,M22,M22 Globular,العنقود الكروي M22,cluster,28.4,S,16.15,18.5,false
+kirkukCenter,NGC869,Double Cluster,العنقود المزدوج,cluster,25,NE,15.84,18.5,false
+kirkukCenter,M8,Lagoon Nebula,سديم البحيرة,nebula,25.4,SW,15.74,19,false
+kirkukCenter,M31,Andromeda Galaxy,مجرة المرأة المسلسلة,galaxy,33.4,NE,15.15,19.5,false
+kirkukCenter,M51,Whirlpool Galaxy,المجرة الدوامية,galaxy,22.7,NW,15.26,20.5,false
+ramadiCenter,Albireo,Albireo (double star),منقار الدجاجة (نجم مزدوج),double,84,SW,16.28,16,true
+ramadiCenter,Mizar,Mizar & Alcor,المئزر والسها,double,24.4,NW,15.02,16,false
+ramadiCenter,M57,Ring Nebula,السديم الحلقي,nebula,79.9,W,16.29,18.5,false
+ramadiCenter,M27,Dumbbell Nebula,سديم الدمبل,nebula,78.6,S,16.34,19,false
+ramadiCenter,M13,Hercules Cluster,عنقود هرقل,cluster,53.2,W,15.95,18.5,false
+ramadiCenter,M11,Wild Duck Cluster,عنقود البطة البرية,cluster,48.5,S,16.11,19,false
+ramadiCenter,M22,M22 Globular,العنقود الكروي M22,cluster,30.6,S,15.86,18.5,false
+ramadiCenter,NGC869,Double Cluster,العنقود المزدوج,cluster,22.8,NE,15.14,18.5,false
+ramadiCenter,M8,Lagoon Nebula,سديم البحيرة,nebula,27.6,SW,15,19,false
+ramadiCenter,M31,Andromeda Galaxy,مجرة المرأة المسلسلة,galaxy,31.6,NE,14.51,19.5,false
+ramadiCenter,M51,Whirlpool Galaxy,المجرة الدوامية,galaxy,22,NW,14.93,20.5,false
+ramadiCenter,MWcore,Milky Way core,قلب درب التبانة,milkyway,21.8,SW,14.78,20.5,false
+rutba,Albireo,Albireo (double star),منقار الدجاجة (نجم مزدوج),double,84.8,S,19.47,16,true
+rutba,Mizar,Mizar & Alcor,المئزر والسها,double,24.3,NW,19.03,16,true
+rutba,M57,Ring Nebula,السديم الحلقي,nebula,80.5,W,19.46,18.5,true
+rutba,M13,Hercules Cluster,عنقود هرقل,cluster,53.7,W,19.39,18.5,true
+rutba,M27,Dumbbell Nebula,سديم الدمبل,nebula,78.9,SE,19.46,19,true
+rutba,M22,M22 Globular,العنقود الكروي M22,cluster,31.4,S,19.19,18.5,true
+rutba,M11,Wild Duck Cluster,عنقود البطة البرية,cluster,49.3,S,19.37,19,true
+rutba,M8,Lagoon Nebula,سديم البحيرة,nebula,28.5,SW,19.12,19,true
+rutba,NGC869,Double Cluster,العنقود المزدوج,cluster,21.9,NE,17.85,18.5,false
+rutba,MWcore,Milky Way core,قلب درب التبانة,milkyway,22.6,SW,18.97,20.5,false
+rutba,M51,Whirlpool Galaxy,المجرة الدوامية,galaxy,22,NW,18.96,20.5,false
+rutba,M31,Andromeda Galaxy,مجرة المرأة المسلسلة,galaxy,30.7,NE,17.25,19.5,false

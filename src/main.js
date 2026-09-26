@@ -1,760 +1,991 @@
 // ── Orbit Galaxy — Main App ──
-// Clean single-page: Starfield → ESP32 Sim → NASA → AI → DarkSky → Map
+// NASA VIIRS light + Moon/Sun → ORBIT AI (trained model, runs in the browser)
+//   → sky quality · telescope guide · lighting what-if · community observations
 
-import { Starfield } from './modules/starfield.js';
-import { ESP32Station } from './modules/esp32.js';
-import { NasaDataService } from './modules/nasaApi.js';
-import { AIEngine } from './modules/aiEngine.js';
+import { SkyModel } from './modules/skyModel.js';
+import { SkyModelV2 } from './modules/skyModelV2.js';
+import { lightFeatures } from './modules/viirs.js';
 import { DarkSkySimulator } from './modules/darkSkySimulator.js';
-import { PlanetSimulator } from './modules/planetSimulator.js';
-import { setLang, getLang } from './modules/i18n.js';
+import { planNight, observingTime, DIRECTIONS, sectorOf, CATALOG } from './modules/telescopeGuide.js';
+import { planetsTonight, requiredReduction, limitingMag, INSTRUMENTS, BODIES, planetEphemeris } from './modules/planets.js';
+import { moonPosition, moonIllumination, raDecToAltAz, sunPosition, nextDarkness } from './modules/astro.js';
+import { LiveCompass, declination, turn } from './modules/liveCompass.js';
+import { buildHeatGrid, renderHeatImage, extremes, RAMP_CSS } from './modules/heatLayer.js';
+import { SITES, DEFAULT_SITE } from './modules/sites.js';
+import { GIBS_BLACK_MARBLE, GAS_FLARES, gasFlareAt, fetchElevation, fetchCloudForecast, cloudAt } from './modules/nasaApi.js';
+import { nelmFromSqm, bortleFromSqm, visibleStars, BORTLE_NAMES } from './modules/skyMath.js';
+import { setLang, getLang, t, onLangChange } from './modules/i18n.js';
 import { SatelliteTracker } from './modules/satelliteTracker.js';
-import Lenis from 'lenis';
 
-let starfield, esp32, nasa, ai, darkSky, map, satTracker, planetSim;
-let nasaOverlay = null;
-let nasaOverlayVisible = false;
+const BASE = import.meta.env.BASE_URL;
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const model = new SkyModel();        // v1: NASA GIBS 2016, works everywhere
+let modelV2 = null;                  // v2: NASA Black Marble 2024, Iraq (loaded if available)
+const sim = new DarkSkySimulator();
+let map = null;
+let nasaLayer = null;
+let customMarker = null;
+const siteMarkers = {};
+let current = null;        // { key, lat, lon, alt, nameEn, nameAr }
+let result = null;         // last prediction bundle
+let requestId = 0;
+let observations = [];
+let photoPlaces = {};          // illustrative gallery locations (ml/07_display_places.py)
+const photoMarkers = [];
+const lc = { compass: null, live: false, heading: null, target: 'darkest', targets: [], lastSaid: '', lastSaidAt: 0, timer: null };
+const pl = { inst: 'scope114', key: null, cut: 0, viewer: null, glFailed: false };
+const REFRESH_MS = 10 * 60000;          // live data refresh
+const heat = { grid: null, elev: null, overlay: null, building: null, local: null, localId: 0 };
+const HEAT_DETAIL_ZOOM = 8;          // from here the model is re-run on the visible area, finer
 
 // ── Boot ──
-document.addEventListener('DOMContentLoaded', () => {
-  starfield = new Starfield('stars');
-  nasa = new NasaDataService();
-  esp32 = new ESP32Station(onData);
-  ai = new AIEngine(nasa, esp32);
-  darkSky = new DarkSkySimulator(esp32);
-  satTracker = new SatelliteTracker();
-  planetSim = new PlanetSimulator('planet-canvas');
+document.addEventListener('DOMContentLoaded', async () => {
+  setLang(getLang());
+  syncLangButton();
+  bindTopbar();
+  bindTabs();
+  bindSimulator();
+  bindPlanets();
+  bindCompass();
+  bindLocate();
+  markSoonLinks();
+  buildSiteSelect();
+  setStatus('loading', 'loadingModel');
 
-  bindSiteSelect();
-  bindDarkSky();
-  bindAutoCalibration();
-  bindNasaToggle();
-  bindLangToggle();
-  initScrollReveal();
-
-  onData(esp32.data);
-  updateAI();
-  updateDarkSky(true);
-
-  // Premium smooth scrolling
   try {
-    const lenis = new Lenis({
-      lerp: 0.08,
-      wheelMultiplier: 1.6,
-      smoothWheel: true,
-      syncTouch: false,
-    });
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
-  } catch (err) {
-    console.warn('Smooth scroll fallback to native:', err);
+    await model.load(BASE);
+    try { modelV2 = await new SkyModelV2().load(BASE); } catch { modelV2 = null; }   // optional
+  } catch (e) {
+    console.error('Model failed to load', e);
+    setStatus('error', 'errModel');
+    return;
   }
-
-  setTimeout(initMap, 300);
+  renderModelSection();
+  renderHero();
+  initMap();
+  bindHeat();
+  $('photo-toggle').addEventListener('change', e => photoMarkers.forEach(m => (e.target.checked ? m.addTo(map) : map.removeLayer(m))));
+  loadObservations();
+  $('obs-gallery').addEventListener('click', e => {
+    const b = e.target.closest('.o-check');
+    const o = b && observations.find(x => x.thumb === b.dataset.thumb);
+    if (o) checkPhotoPlace(o);
+  });
+  await selectSite(DEFAULT_SITE);
+  const refresh = () => { if (current && !document.hidden) predictPlace(current); };
+  setInterval(refresh, REFRESH_MS);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && result && Date.now() - result.updatedAt > REFRESH_MS) refresh();
+  });
 });
 
-// ── Language & Theme Toggle ──
-function bindLangToggle() {
-  const langBtn = document.getElementById('btn-lang');
-  if (langBtn) {
-    langBtn.addEventListener('click', () => {
-      const newLang = getLang() === 'en' ? 'ar' : 'en';
-      setLang(newLang);
-      langBtn.textContent = newLang === 'en' ? 'عربي' : 'English';
-      updateAutoCalibration();
+// ── Helpers ──
+const $ = id => document.getElementById(id);
+const setText = (id, v) => { const el = $(id); if (el) el.textContent = v; };
+const placeName = p => (getLang() === 'ar' ? p.nameAr : p.nameEn);
+const fmt = (v, d = 2) => (v == null || Number.isNaN(v) ? '—' : v.toFixed(d));
+const clamp = v => Math.max(16, Math.min(22.3, v));
+const inIraq = (lat, lon) => lat > 29 && lat < 37.5 && lon > 38.5 && lon < 48.8;
+// Western digits in both languages so all numbers on the page look the same
+const locale = () => (getLang() === 'ar' ? 'ar-IQ-u-nu-latn' : 'en-GB');
+// keep coordinates left-to-right inside Arabic text
+const ltr = s => `⁦${s}⁩`;
+
+function setStatus(state, key) {
+  document.querySelector('.results')?.setAttribute('aria-busy', String(state === 'loading'));
+  $('status').className = 'status ' + (state === 'ready' ? 'ready' : state === 'error' ? 'error' : '');
+  const txt = $('status-text');
+  txt.setAttribute('data-i18n', key);
+  txt.textContent = t(key);
+}
+
+// ── Top bar: language + theme ──
+function syncLangButton() {
+  $('btn-lang').textContent = getLang() === 'ar' ? 'English' : 'عربي';
+}
+
+function bindTopbar() {
+  $('btn-lang').addEventListener('click', () => {
+    setLang(getLang() === 'ar' ? 'en' : 'ar');
+    syncLangButton();
+  });
+  onLangChange(() => {
+    buildSiteSelect();
+    renderModelSection();
+    if (result) renderAll();
+    renderObservations();
+    syncThemeButton();
+    if (lc.live) $('lc-start').textContent = t('lcStop');
+    renderHeroText();
+    markSoonLinks();
+    updateHeatInfo();
+  });
+
+  $('btn-theme').addEventListener('click', () => {
+    const light = document.documentElement.dataset.theme !== 'light';
+    if (light) document.documentElement.dataset.theme = 'light';
+    else delete document.documentElement.dataset.theme;
+    try { localStorage.setItem('orbit-theme', light ? 'light' : 'dark'); } catch { /* private mode */ }
+    syncThemeButton();
+  });
+  syncThemeButton();
+}
+
+function syncThemeButton() {
+  const light = document.documentElement.dataset.theme === 'light';
+  const b = $('btn-theme');
+  b.textContent = light ? '🌙' : '☀️';
+  b.setAttribute('data-i18n-aria', light ? 'themeDark' : 'themeLight');
+  b.setAttribute('aria-label', t(light ? 'themeDark' : 'themeLight'));
+}
+
+// ── Tabs ──
+function bindTabs() {
+  const tabs = [...document.querySelectorAll('.tab')];
+  const select = tab => {
+    tabs.forEach(tb => {
+      const on = tb === tab;
+      tb.setAttribute('aria-selected', String(on));
+      tb.tabIndex = on ? 0 : -1;
+      $(tb.getAttribute('aria-controls')).hidden = !on;
     });
-  }
-
-  const themeBtn = document.getElementById('btn-theme');
-  if (themeBtn) {
-    themeBtn.addEventListener('click', () => {
-      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-      if (isLight) {
-        document.documentElement.removeAttribute('data-theme');
-        themeBtn.textContent = '☀️';
-      } else {
-        document.documentElement.setAttribute('data-theme', 'light');
-        themeBtn.textContent = '🌙';
-      }
-    });
-  }
-}
-
-// ── Site Selector ──
-function bindSiteSelect() {
-  const sel = document.getElementById('site-select');
-  sel.addEventListener('change', () => {
-    esp32.setSite(sel.value);
-    const cardSel = document.getElementById('calib-site-select');
-    if (cardSel) cardSel.value = sel.value;
-    if (map) flyTo(sel.value);
-    updateAI();
-    updateDarkSky(true);
-    resetPlanetViewModeToCurrent();
-    updateAutoCalibration();
-  });
-}
-
-// ── ESP32 USB Connect ──
-function bindESP32Connect() {
-  const btn = document.getElementById('btn-esp32');
-  if (!btn) return;
-
-  btn.addEventListener('click', async () => {
-    if (esp32.isConnected) {
-      await esp32.disconnectSerial();
-      btn.textContent = '⚡ Connect ESP32 via USB';
-      btn.classList.remove('connected');
-      document.getElementById('demo-dot').className = 'demo-dot green';
-      document.getElementById('demo-status').textContent = 'SIMULATOR ACTIVE';
-      document.getElementById('demo-status').style.color = '';
-    } else {
-      try {
-        btn.textContent = '⏳ Connecting...';
-        await esp32.connectWebSerial();
-        btn.textContent = '🔌 Disconnect ESP32';
-        btn.classList.add('connected');
-        document.getElementById('demo-dot').className = 'demo-dot green';
-        document.getElementById('demo-status').textContent = 'ESP32 LIVE';
-        document.getElementById('demo-status').style.color = '#00e676';
-      } catch (e) {
-        btn.textContent = '⚡ Connect ESP32 via USB';
-        // Show inline error
-        const msg = e.message.includes('Serial') 
-          ? 'WebSerial requires Chrome or Edge browser.' 
-          : e.message;
-        alert('Connection failed: ' + msg);
-      }
-    }
-  });
-}
-
-// ── ESP32 Settings ──
-function bindESPSettings() {
-  const btn = document.getElementById('btn-esp-settings');
-  const panel = document.getElementById('esp-settings-panel');
-  if (btn && panel) {
-    btn.addEventListener('click', () => {
-      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-    });
-  }
-
-  const calibSlider = document.getElementById('esp-calib-slider');
-  const calibVal = document.getElementById('esp-calib-val');
-  if (calibSlider && calibVal) {
-    calibSlider.addEventListener('input', () => {
-      const val = parseFloat(calibSlider.value);
-      calibVal.textContent = val > 0 ? '+' + val.toFixed(1) : val.toFixed(1);
-      // In a real app we'd send this to ESP32 via Serial. Here we adjust the UI.
-      esp32.data.calibratedMag = esp32.data.rawMag + val;
-      onData(esp32.data);
-      updateDarkSky();
-    });
-  }
-}
-
-// ── NASA Overlay Toggle ──
-function bindNasaToggle() {
-  const btn = document.getElementById('btn-nasa-layer');
-  if (!btn) return;
-
-  btn.addEventListener('click', () => {
-    if (!map) return;
-    nasaOverlayVisible = !nasaOverlayVisible;
-    btn.classList.toggle('active', nasaOverlayVisible);
-
-    if (nasaOverlayVisible && !nasaOverlay) {
-      const layer = nasa.getGibsLayer('blackMarble');
-      nasaOverlay = L.tileLayer(layer.url, {
-        attribution: layer.attribution,
-        maxZoom: layer.maxZoom,
-        opacity: 0.7
-      });
-      nasaOverlay.addTo(map);
-    } else if (nasaOverlayVisible && nasaOverlay) {
-      nasaOverlay.addTo(map);
-    } else if (!nasaOverlayVisible && nasaOverlay) {
-      map.removeLayer(nasaOverlay);
-    }
-  });
-}
-
-// ── Data Update from ESP32 ──
-function onData(d) {
-  setText('v-lat', d.lat.toFixed(4) + '°');
-  setText('v-lon', d.lon.toFixed(4) + '°');
-  setText('v-alt', d.alt + 'm');
-  setText('v-ch0', d.ch0);
-  setText('v-ch1', d.ch1);
-  setText('v-pitch', d.pitch.toFixed(1) + '°');
-
-  // Sky quality
-  setText('v-sqm', d.calibratedMag.toFixed(2));
-  setText('v-nelm', d.nelm.toFixed(2));
-  setText('v-bortle', d.bortle);
-
-  // Color code bortle
-  const bEl = document.getElementById('v-bortle');
-  if (bEl) bEl.className = 'tele-val ' + (d.bortle <= 3 ? 'green' : d.bortle <= 5 ? '' : d.bortle <= 7 ? 'amber' : 'red');
-
-  // Color code SQM
-  const sqmEl = document.getElementById('v-sqm');
-  if (sqmEl) sqmEl.className = 'tele-val ' + (d.calibratedMag >= 21 ? 'green' : d.calibratedMag >= 19 ? '' : d.calibratedMag >= 18 ? 'amber' : 'red');
-
-  // NELM color
-  const nelmEl = document.getElementById('v-nelm');
-  if (nelmEl) nelmEl.className = 'tele-val ' + (d.nelm >= 6 ? 'green' : d.nelm >= 4.5 ? '' : 'amber');
-
-  // Bortle desc
-  const descs = { 1: 'Pristine', 2: 'Truly Dark', 3: 'Rural', 4: 'Rural/Sub', 5: 'Suburban', 6: 'Bright Sub', 7: 'Sub/Urban', 8: 'City Sky', 9: 'Inner City' };
-  setText('v-bortle-desc', descs[d.bortle] || '');
-
-  // Lamp
-  setText('v-lamp', d.lampType);
-  const lampEl = document.getElementById('v-lamp');
-  if (lampEl && d.lampColor) lampEl.style.color = d.lampColor;
-}
-
-// ── AI Update ──
-function updateAI() {
-  const site = esp32.sites[esp32.currentSiteKey];
-  const flare = nasa.isInsideGasFlareZone(site.lat, site.lon);
-
-  const r = ai.predict({
-    satelliteRadiance: site.radiance,
-    visibleIrRatio: esp32.data.visibleIrRatio,
-    distKm: site.distKm,
-    elevation: site.alt,
-    dustAOD: nasa.environment.dustAOD,
-    moonIllum: nasa.environment.moonPhase * 100,
-    moonAlt: nasa.environment.moonAltitude,
-    isGasFlare: flare.isFlare
-  });
-
-  setText('v-sat-est', r.satelliteEstimate.toFixed(2));
-  setText('v-ai-est', r.predictedMag.toFixed(2));
-  setText('v-kpi', ai.metrics.improvementPercent.toFixed(1) + '%');
-}
-
-// ── DarkSky Controls ──
-function bindDarkSky() {
-  const sliders = [
-    { el: 'ds-useful', key: 'useful', display: 'ds-useful-v', suffix: '%' },
-    { el: 'ds-targeted', key: 'targeted', display: 'ds-targeted-v', suffix: '%' },
-    { el: 'ds-dimming', key: 'dimming', display: 'ds-dimming-v', suffix: '%' }
-  ];
-
-  sliders.forEach(s => {
-    const input = document.getElementById(s.el);
-    if (!input) return;
-    input.addEventListener('input', () => {
-      document.getElementById(s.display).textContent = input.value + s.suffix;
-      darkSky.setParam(s.key, parseInt(input.value, 10));
-      updateDarkSky();
-    });
-  });
-
-  const curfew = document.getElementById('ds-curfew');
-  if (curfew) curfew.addEventListener('change', e => {
-    darkSky.setParam('curfew', e.target.checked);
-    updateDarkSky();
-  });
-
-  const warm = document.getElementById('ds-warm');
-  if (warm) warm.addEventListener('change', e => {
-    darkSky.setParam('warmColor', e.target.checked);
-    updateDarkSky();
-  });
-}
-
-// ── Auto-Calibration / Smart Intervention System ──
-function resetPlanetViewModeToCurrent() {
-  const btnCurrent = document.getElementById('btn-mode-current');
-  const btnCalib = document.getElementById('btn-mode-calibrated');
-  if (btnCurrent && btnCalib) {
-    btnCurrent.classList.add('active');
-    btnCalib.classList.remove('active');
-  }
-  if (planetSim) planetSim.setViewMode('current');
-}
-
-function updateAutoCalibration() {
-  const targetSelect = document.getElementById('calib-target-select');
-  if (!targetSelect) return;
-
-  const currentSite = (esp32 && esp32.sites) ? esp32.sites[esp32.currentSiteKey] : null;
-  const siteName = currentSite
-    ? (getLang() === 'ar' ? currentSite.nameAr : currentSite.nameEn)
-    : 'Mosul Downtown';
-  const B_old = currentSite ? currentSite.baseMag : 17.00;
-  const B_target = parseFloat(targetSelect.value);
-
-  // Sync with card site select dropdown
-  const cardSiteSel = document.getElementById('calib-site-select');
-  if (cardSiteSel && esp32 && esp32.currentSiteKey) {
-    cardSiteSel.value = esp32.currentSiteKey;
-  }
-
-  setText('calib-site-name', siteName);
-  setText('calib-current-val', B_old.toFixed(2));
-
-  // Unified measurements: Bortle, NELM, and Coordinates matching Ground Station & Map above
-  const bortleVal = currentSite ? currentSite.bortle : (esp32 ? esp32.data.bortle : 8);
-  setText('calib-current-bortle', `Bortle ${bortleVal}`);
-  const curNELM = esp32 ? esp32.calculateNELM(B_old) : 3.28;
-  setText('calib-current-nelm', `NELM ${curNELM.toFixed(2)}`);
-  if (currentSite) {
-    setText('calib-current-coords', `📍 ${currentSite.lat.toFixed(4)}°N, ${currentSite.lon.toFixed(4)}°E · Alt ${currentSite.alt}m`);
-  }
-
-  // Formula A: Calculate required dimming percentage (d_percent)
-  // d = 1 - (10 ^ (- (B_target - B_old) / 2.5))
-  // d_percent = d * 100
-  // Note: If d_percent >= 100, cap it at 99.9%. If B_target <= B_old, sky is already suitable!
-  let d_percent = 0;
-  if (B_target > B_old) {
-    const d = 1.0 - Math.pow(10, -(B_target - B_old) / 2.5);
-    d_percent = d * 100.0;
-    if (d_percent >= 100.0) d_percent = 99.9;
-    setText('calib-res-reduction', d_percent.toFixed(2) + '%');
-  } else {
-    d_percent = 0.0;
-    const cleanMsg = getLang() === 'ar' ? '٠.٠٠٪ (السماء مناسبة جداً لهذا الكوكب! ✨)' : '0.00% (Sky already clear! ✨)';
-    setText('calib-res-reduction', cleanMsg);
-  }
-
-  // Formula B: Calculate Naked Eye Limiting Magnitude (NELM) using the Unihedron formula:
-  // Term = (10 ^ (4.316 - (B_target / 5))) + 1
-  // NELM = 7.93 - (5 * Math.log10(Term))
-  const Term = Math.pow(10, 4.316 - (B_target / 5.0)) + 1.0;
-  const NELM = 7.93 - (5.0 * Math.log10(Term));
-
-  setText('calib-res-nelm', NELM.toFixed(2));
-  setText('calib-res-target', B_target.toFixed(2) + ' mag/arcsec²');
-
-  // Sync with interactive 3D planet telescope simulator & guidance
-  const selectedOpt = targetSelect.options[targetSelect.selectedIndex];
-  const planetKey = selectedOpt ? (selectedOpt.getAttribute('data-planet') || 'jupiter') : 'jupiter';
-
-  if (planetSim) {
-    planetSim.setPlanet(planetKey);
-    planetSim.setSiteData(
-      siteName,
-      B_old,
-      B_target,
-      currentSite ? currentSite.lat : 36.3587,
-      currentSite ? currentSite.lon : 43.1307
-    );
-  }
-}
-
-function bindAutoCalibration() {
-  const btn = document.getElementById('btn-calc-calib');
-  const targetSelect = document.getElementById('calib-target-select');
-  const cardSiteSel = document.getElementById('calib-site-select');
-  if (!btn || !targetSelect) return;
-
-  // In-card site selector change event
-  if (cardSiteSel) {
-    cardSiteSel.addEventListener('change', () => {
-      const siteKey = cardSiteSel.value;
-      if (esp32) esp32.setSite(siteKey);
-      const topSel = document.getElementById('site-select');
-      if (topSel) topSel.value = siteKey;
-      if (map) flyTo(siteKey);
-      updateAI();
-      updateDarkSky(true);
-      resetPlanetViewModeToCurrent();
-      updateAutoCalibration();
-    });
-  }
-
-  // Target planet change event
-  targetSelect.addEventListener('change', () => {
-    resetPlanetViewModeToCurrent();
-    updateAutoCalibration();
-  });
-
-  // Calculate Auto-Calibration button click
-  btn.addEventListener('click', () => {
-    // Automatically switch telescope to Calibrated Sky mode so user immediately sees the crystal-clear view!
-    const btnCurrent = document.getElementById('btn-mode-current');
-    const btnCalib = document.getElementById('btn-mode-calibrated');
-    if (btnCurrent && btnCalib) {
-      btnCalib.classList.add('active');
-      btnCurrent.classList.remove('active');
-    }
-    if (planetSim) planetSim.setViewMode('calibrated');
-
-    updateAutoCalibration();
-    btn.style.transform = 'scale(0.98)';
-    setTimeout(() => { btn.style.transform = ''; }, 150);
-  });
-
-  // Handle telescope view mode toggle (Current Sky vs Calibrated Sky)
-  const btnCurrent = document.getElementById('btn-mode-current');
-  const btnCalib = document.getElementById('btn-mode-calibrated');
-
-  if (btnCurrent && btnCalib) {
-    btnCurrent.addEventListener('click', () => {
-      btnCurrent.classList.add('active');
-      btnCalib.classList.remove('active');
-      if (planetSim) planetSim.setViewMode('current');
-    });
-
-    btnCalib.addEventListener('click', () => {
-      btnCalib.classList.add('active');
-      btnCurrent.classList.remove('active');
-      if (planetSim) planetSim.setViewMode('calibrated');
-    });
-  }
-
-  // Global helper to smoothly select and scroll to Auto-Calibration from map popups
-  window.scrollToCalib = function(siteKey) {
-    if (siteKey && esp32) {
-      esp32.setSite(siteKey);
-      const sel = document.getElementById('site-select');
-      if (sel) sel.value = siteKey;
-      const cardSel = document.getElementById('calib-site-select');
-      if (cardSel) cardSel.value = siteKey;
-      updateAI();
-      updateDarkSky(true);
-      resetPlanetViewModeToCurrent();
-      updateAutoCalibration();
-    }
-    const calibEl = document.querySelector('.calib-card');
-    if (calibEl) calibEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (tab.id === 'tab-sim' && result) updateSimulator(true);   // canvases need a visible size
+    if (tab.id === 'tab-planets') renderPlanets(); else pl.viewer?.stop();
   };
-
-  // Initial calculation on load
-  updateAutoCalibration();
+  tabs.forEach((tab, i) => {
+    tab.tabIndex = i === 0 ? 0 : -1;
+    tab.addEventListener('click', () => select(tab));
+    tab.addEventListener('keydown', e => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      const forward = (e.key === 'ArrowRight') !== (document.documentElement.dir === 'rtl');
+      const next = tabs[(i + (forward ? 1 : -1) + tabs.length) % tabs.length];
+      next.focus();
+      select(next);
+    });
+  });
 }
 
-let lastRenderedBeforeSite = null;
-
-function updateDarkSky(forceRedrawBefore = false) {
-  const currentSite = (esp32 && esp32.sites) ? esp32.sites[esp32.currentSiteKey] : null;
-  const baseMag = currentSite ? currentSite.baseMag : (esp32 ? esp32.data.calibratedMag : 17.30);
-  const result = darkSky.calculateImpact(baseMag);
-
-  setText('ds-gain', '+' + result.totalGain.toFixed(2));
-  setText('ds-stars', '+' + result.additionalStars.toLocaleString());
-  setText('ds-energy', result.energyReductionPct + '%');
-
-  const beforeBortle = currentSite ? currentSite.bortle : (esp32 ? esp32.data.bortle : 8);
-  const afterBortle = esp32 ? esp32.calculateBortle(result.simulatedMag) : 6;
-  setText('sky-before-mag', result.baseMag.toFixed(2) + ' mag');
-  setText('sky-after-mag', result.simulatedMag.toFixed(2) + ' mag');
-  setText('sky-before-bortle', 'Bortle ' + beforeBortle);
-  setText('sky-after-bortle', 'Bortle ' + afterBortle);
-
-  // Only redraw BEFORE on site change or initial load
-  const siteKey = esp32 ? esp32.currentSiteKey : 'default';
-  if (forceRedrawBefore || lastRenderedBeforeSite !== siteKey) {
-    renderSkyCanvas('sky-before-canvas', result.baseMag, result.starsBefore);
-    lastRenderedBeforeSite = siteKey;
+// ── Site selector ──
+function buildSiteSelect() {
+  const sel = $('site-select');
+  sel.innerHTML = '';
+  if (current?.key === 'custom') {
+    const og = document.createElement('optgroup');
+    og.label = t('optCustom');
+    const o = document.createElement('option');
+    o.value = 'custom';
+    o.textContent = `📍 ${placeName(current)}`;
+    og.appendChild(o);
+    sel.appendChild(og);
   }
-
-  renderSkyCanvas('sky-after-canvas', result.simulatedMag, result.starsAfter);
+  for (const [group, label] of [['nineveh', 'optNineveh'], ['iraq', 'optIraq']]) {
+    const og = document.createElement('optgroup');
+    og.label = t(label);
+    for (const [key, s] of Object.entries(SITES).filter(([, s]) => s.group === group)) {
+      const o = document.createElement('option');
+      o.value = key;
+      o.textContent = `${s.icon} ${placeName(s)}`;
+      og.appendChild(o);
+    }
+    sel.appendChild(og);
+  }
+  sel.value = current?.key || DEFAULT_SITE;
+  sel.onchange = () => { if (SITES[sel.value]) selectSite(sel.value, true); };
 }
 
-// ── Sky Canvas Renderer ──
-// Seed-based random for consistent star positions
+function selectSite(key, fly = false) {
+  const s = SITES[key];
+  if (fly && map) map.flyTo([s.lat, s.lon], 10, { duration: 0.8, animate: !REDUCED_MOTION });
+  return predictPlace({ key, ...s });
+}
+
+// ── Geolocation ──
+function bindLocate() {
+  const locate = () => {
+    $('app').scrollIntoView();
+    if (!navigator.geolocation) { showAlert(t('errLocation')); return; }
+    setStatus('loading', 'loadingSky');
+    navigator.geolocation.getCurrentPosition(
+      async pos => {
+        const { latitude: lat, longitude: lon } = pos.coords;
+        const alt = pos.coords.altitude ?? await fetchElevation(lat, lon);
+        if (map) map.flyTo([lat, lon], 10, { duration: 0.8, animate: !REDUCED_MOTION });
+        predictPlace({ key: 'custom', lat, lon, alt, nameEn: 'My location', nameAr: 'موقعي' });
+      },
+      () => { setStatus('ready', 'ready'); showAlert(t('errLocation')); },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 }
+    );
+  };
+  $('cta-locate').addEventListener('click', locate);
+  $('btn-locate').addEventListener('click', locate);
+}
+
+function showAlert(msg) {
+  const a = $('alert');
+  a.textContent = msg || '';
+  a.hidden = !msg;
+}
+
+// ── The core: predict everything for one place ──
+async function predictPlace(place) {
+  const id = ++requestId;
+  current = place;
+  buildSiteSelect();
+  highlightMarker(place);
+  setStatus('loading', 'loadingSky');
+  showAlert('');
+
+  // Inside Iraq use v2 (2024 calibrated radiance); elsewhere v1 (2016 GIBS, global)
+  const engine = modelV2?.covers(place.lat, place.lon) ? modelV2 : model;
+  const light = engine === modelV2 ? modelV2.radianceFeatures(place.lat, place.lon) : await lightFeatures(place.lat, place.lon);
+  if (id !== requestId) return null;
+  // guide compass expects the v1 light-index scale; ~60 nW/cm²/sr ≈ saturated v1 pixel
+  const domes = engine === modelV2 ? light.directions.map(d => d / 60) : light.directions;
+  const local = inIraq(place.lat, place.lon) && model.localCalibration ? model.localCalibration.mean_delta : 0;
+  const forecast = await fetchCloudForecast(place.lat, place.lon);
+  if (id !== requestId) return null;
+
+  // Model inputs for any moment: real Sun, Moon and forecast clouds at that hour
+  const cloudQ = d => { const c = cloudAt(forecast, d); return c == null ? 0 : Math.min(0.75, Math.round(c * 4) / 4); };
+  const inputsAt = (d, extra = {}) => {
+    const inp = engine.inputsFor({ lat: place.lat, lon: place.lon, elevationM: place.alt, date: d, cloud: cloudQ(d), light });
+    Object.assign(inp.x, extra);
+    return inp;
+  };
+  const skyAt = d => clamp(engine.predictVector(inputsAt(d).x) + local);
+
+  // 1) Site sky quality: reference conditions = clear, moonless, local midnight (a property of the place)
+  const now = new Date();
+  const refInputs = inputsAt(now, { moon_illum: 0, moon_alt: -10, moon_light: 0, cloud: 0, sun_alt: -40, solar_hour: 0 });
+  const aiSqm = clamp(engine.predictVector(refInputs.x) + local);
+  const satSqm = clamp(engine.satelliteOnly(refInputs.x));
+
+  // 2) Right now: the model is valid only once the Sun is below −12° (as in training)
+  const sunNow = sunPosition(now, place.lat, place.lon).alt;
+  const nowState = sunNow > -0.83 ? 'day' : sunNow > -12 ? 'twilight' : 'night';
+  const nowSqm = nowState === 'night' ? skyAt(now) : null;
+
+  // 3) Tonight: real moon + cloud forecast at observing time
+  const when = observingTime(place.lat, place.lon, now);
+  const clouds = cloudAt(forecast, when);
+  const tonightSqm = skyAt(when);
+  const plan = planNight(place, tonightSqm, domes, when);
+
+  result = {
+    engine, place, light, refInputs, aiSqm, satSqm, when, clouds, tonightSqm, plan,
+    forecast, inputsAt, skyAt, now, sunNow, nowState, nowSqm, updatedAt: now,
+    flare: gasFlareAt(place.lat, place.lon)
+  };
+  renderAll();
+  updateHeatInfo();
+  setStatus('ready', 'ready');
+  return result;
+}
+
+function renderAll() {
+  const p = result.place;
+  setText('place-name', `${p.key === 'custom' ? '📍 ' : ''}${placeName(p)} · ${ltr(`${p.lat.toFixed(3)}°, ${p.lon.toFixed(3)}° · ${Math.round(p.alt)} m`)}`);
+  showAlert(result.flare ? t('flareWarn') : '');
+  renderSky();
+  renderGuide();
+  updateSimulator(true);
+  renderPlanets();
+}
+
+// ── Heat map: model prediction on a grid over Iraq ──
+function bindHeat() {
+  $('heat-bar').style.background = RAMP_CSS;
+  $('heat-toggle').addEventListener('change', e => (e.target.checked ? showHeat() : hideHeat()));
+  $('heat-worst').addEventListener('click', () => {
+    const w = heat.ext?.brightest;
+    if (w) goToCell(w, t('heatWorstName'));
+  });
+  $('heat-dark').addEventListener('click', () => {
+    const d = heat.ext?.darkestNear;
+    if (d) goToCell(d, t('heatDarkName'));
+  });
+}
+
+async function showHeat() {
+  $('heat-legend').hidden = false;
+  if (!modelV2) { setText('heat-status', t('heatNoModel')); return; }
+  if (!heat.grid) {
+    if (!heat.building) {
+      heat.building = (async () => {
+        heat.elev = await (await fetch(`${BASE}data/iraq_elevation.json`)).json();
+        heat.grid = await buildHeatGrid(modelV2, heat.elev, p => setText('heat-status', t('heatBuilding').replace('{p}', Math.round(p * 100))));
+        const img = renderHeatImage(heat.grid);
+        heat.overlay = L.imageOverlay(img.url, img.bounds, { opacity: 1, className: 'heat-img', interactive: false });
+      })();
+    }
+    await heat.building;
+  }
+  if (!$('heat-toggle').checked) return;           // switched off while building
+  // one light layer at a time: the NASA picture and the model heat map would mix
+  heat.nasaWasOn = $('nasa-toggle').checked;
+  if (heat.nasaWasOn) { $('nasa-toggle').checked = false; map.removeLayer(nasaLayer); }
+  $('map').classList.add('heat-on');
+  if (!heat.moveBound) { map.on('moveend', updateHeatDetail); heat.moveBound = true; }
+  if (map.getZoom() >= HEAT_DETAIL_ZOOM) updateHeatDetail();
+  else { heat.overlay.addTo(map); map.flyToBounds(heat.overlay.getBounds(), { padding: [10, 10], duration: 0.8, animate: !REDUCED_MOTION }); }
+  updateHeatInfo();
+}
+
+// Zoomed in: recompute the visible area with a finer grid (≈1–3 km) so the city stays readable
+async function updateHeatDetail() {
+  if (!$('heat-toggle').checked || !heat.grid) return;
+  const id = ++heat.localId;
+  if (map.getZoom() < HEAT_DETAIL_ZOOM) {
+    if (heat.local) { map.removeLayer(heat.local); heat.local = null; }
+    if (!map.hasLayer(heat.overlay)) heat.overlay.addTo(map);
+    setText('heat-status', t('heatNote'));
+    return;
+  }
+  const bnd = map.getBounds().pad(0.15);
+  const w = bnd.getEast() - bnd.getWest();
+  const step = Math.min(0.05, Math.max(0.01, w / 110));
+  const area = {
+    lat0: Math.max(29, Math.floor(bnd.getSouth() / step) * step), lat1: Math.min(38, bnd.getNorth()),
+    lon0: Math.max(39, Math.floor(bnd.getWest() / step) * step), lon1: Math.min(48.6, bnd.getEast()), step
+  };
+  if (area.lat1 <= area.lat0 || area.lon1 <= area.lon0) return;
+  setText('heat-status', t('heatDetail').replace('{km}', Math.round(step * 111)));
+  const grid = await buildHeatGrid(modelV2, heat.elev, () => {}, area, () => id !== heat.localId);
+  if (!grid || id !== heat.localId || !$('heat-toggle').checked) return;
+  const img = renderHeatImage(grid, 8, { glowPass: false, alphaK: 0.85 });
+  const layer = L.imageOverlay(img.url, img.bounds, { opacity: 1, className: 'heat-img', interactive: false });
+  layer.addTo(map);
+  if (heat.local) map.removeLayer(heat.local);
+  heat.local = layer;
+  if (map.hasLayer(heat.overlay)) map.removeLayer(heat.overlay);
+}
+
+function hideHeat() {
+  $('heat-legend').hidden = true;
+  if (heat.overlay) map.removeLayer(heat.overlay);
+  if (heat.local) { map.removeLayer(heat.local); heat.local = null; }
+  heat.localId++;
+  $('map').classList.remove('heat-on');
+  if (heat.nasaWasOn) { $('nasa-toggle').checked = true; nasaLayer.addTo(map); heat.nasaWasOn = false; }
+}
+
+function updateHeatInfo() {
+  if (!heat.grid || $('heat-legend').hidden) return;
+  heat.ext = extremes(heat.grid, current || SITES[DEFAULT_SITE]);
+  setText('heat-status', t('heatNote'));
+  $('heat-worst').disabled = !heat.ext.brightest;
+  const d = heat.ext.darkestNear;
+  $('heat-dark').disabled = !d;
+  const here = d && d.km < 6;
+  $('heat-dark').disabled = !d || here;
+  $('heat-dark').textContent = here ? t('heatHereDark') : d ? t('heatDarkNear').replace('{km}', Math.round(d.km)) : t('heatDarkName');
+}
+
+function goToCell(cell, name) {
+  const E = heat.elev;
+  const r = Math.min(E.ny - 1, Math.max(0, Math.round((cell.lat - E.lat0) / E.step)));
+  const c = Math.min(E.nx - 1, Math.max(0, Math.round((cell.lon - E.lon0) / E.step)));
+  const label = name;
+  map.flyTo([cell.lat, cell.lon], 10, { duration: 0.8, animate: !REDUCED_MOTION });
+  predictPlace({ key: 'custom', lat: cell.lat, lon: cell.lon, alt: E.elev[r * E.nx + c] ?? 300, nameEn: label, nameAr: label });
+}
+
+// ── Hero: the same model, city vs dark site (clear, moonless night) ──
+const hero = {};
+async function renderHero() {
+  const engine = modelV2 || model;
+  for (const [key, id] of [['mosulCenter', 'city'], ['sinjar', 'dark']]) {
+    const s = SITES[key];
+    const light = engine === modelV2 && modelV2.covers(s.lat, s.lon) ? modelV2.radianceFeatures(s.lat, s.lon) : await lightFeatures(s.lat, s.lon);
+    const eng = engine === modelV2 && modelV2.covers(s.lat, s.lon) ? modelV2 : model;
+    const inp = await eng.buildInputs({ lat: s.lat, lon: s.lon, elevationM: s.alt, date: new Date(), light });
+    Object.assign(inp.x, { moon_illum: 0, moon_alt: -10, moon_light: 0, cloud: 0, sun_alt: -40, solar_hour: 0 });
+    const sqm = clamp(eng.predictVector(inp.x));
+    hero[id] = { sqm, stars: visibleStars(nelmFromSqm(sqm)) };
+    renderSkyCanvas('hero-' + id, sqm, hero[id].stars);
+  }
+  renderHeroText();
+}
+function renderHeroText() {
+  for (const id of ['city', 'dark']) {
+    if (hero[id]) setText(`hero-${id}-v`, `${t('heroStars').replace('{n}', hero[id].stars.toLocaleString(locale()))} · B${bortleFromSqm(hero[id].sqm)}`);
+  }
+}
+
+// Community links not set yet (href="#") → show "soon" instead of opening a blank tab
+function markSoonLinks() {
+  for (const id of ['link-insta', 'link-send']) {
+    const a = $(id);
+    if (a.getAttribute('href') !== '#') continue;
+    a.setAttribute('aria-disabled', 'true');
+    a.removeAttribute('target');
+    if (!a.querySelector('.soon')) a.insertAdjacentHTML('beforeend', ` <span class="soon">${t('soon')}</span>`);
+    else a.querySelector('.soon').textContent = t('soon');
+    a.onclick = e => e.preventDefault();
+  }
+}
+
+// ── Tab 1: sky quality ──
+const moonText = (d, lat, lon) => {
+  const up = moonPosition(d, lat, lon).alt > 0;
+  return up ? ltr(`${Math.round(moonIllumination(d) * 100)}%`) : t('moonBelowShort');
+};
+const cloudText = c => (c == null ? t('unknown') : ltr(`${Math.round(c * 100)}%`));
+const clock = d => d.toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' });
+
+function renderNow() {
+  const { place, now, nowState, nowSqm, when, tonightSqm, clouds, forecast } = result;
+  const dark = nextDarkness(now, place.lat, place.lon);
+  $('now-card').classList.toggle('is-day', nowState === 'day');
+  if (nowState === 'night') {
+    setText('now-v', `${ltr(nowSqm.toFixed(2))} · B${bortleFromSqm(nowSqm)}`);
+    setText('now-s', t('nowNightSub').replace('{moon}', moonText(now, place.lat, place.lon)).replace('{cloud}', cloudText(cloudAt(forecast, now))));
+  } else {
+    setText('now-v', t(nowState === 'day' ? 'nowDay' : 'nowTwilight'));
+    setText('now-s', t(nowState === 'day' ? 'nowDaySub' : 'nowTwilightSub').replace('{time}', dark ? clock(dark) : '—'));
+  }
+  setText('tonight-l', t('tonightLabel').replace('{time}', clock(when)));
+  setText('tonight-v', `${ltr(tonightSqm.toFixed(2))} · B${bortleFromSqm(tonightSqm)}`);
+  setText('tonight-s', t('tonightSub').replace('{moon}', moonText(when, place.lat, place.lon)).replace('{cloud}', cloudText(clouds)));
+  setText('v-updated', t('updated').replace('{time}', clock(result.updatedAt)));
+}
+
+function renderSky() {
+  const { aiSqm, satSqm } = result;
+  renderNow();
+  const b = bortleFromSqm(aiSqm);
+  const nelm = nelmFromSqm(aiSqm);
+  setText('v-ai', fmt(aiSqm));
+  setText('v-bortle-badge', `${t('bortle')} ${b} · ${BORTLE_NAMES[getLang()][b]}`);
+  $('verdict').style.setProperty('--bc', `var(--b${b})`);
+  $('v-scale-marker').style.insetInlineStart = `${((b - 0.5) / 9) * 100}%`;
+  $('v-scale').setAttribute('aria-label', t('scaleLabel').replace('{b}', b));
+  setText('v-unc', fmt(result.engine.model.residual_std, 1));
+  setText('v-engine', t(result.engine === modelV2 ? 'engineV2' : 'engineV1'));
+  setText('v-plain', t('b' + b));
+  setText('v-nelm', fmt(nelm, 1));
+  setText('v-stars', visibleStars(nelm).toLocaleString(locale()));
+  setText('v-sat', fmt(satSqm));
+  const d = aiSqm - satSqm;
+  setText('v-delta', ltr(`${d >= 0 ? '+' : ''}${d.toFixed(2)}`));
+}
+
+// ── Tab 2: telescope guide ──
+function renderGuide() {
+  const { plan, when, clouds, tonightSqm } = result;
+  const lang = getLang();
+  const dirs = DIRECTIONS[lang];
+  const moonDir = dirs[Math.round(plan.moon.az / 45) % 8];
+  setText('g-when', when.toLocaleString(locale(), { weekday: 'short', hour: '2-digit', minute: '2-digit' }));
+  setText('g-moon', `${Math.round(plan.moon.illum * 100)}% · ${plan.moon.up ? moonDir : t('moonBelow')}`);
+  setText('g-clouds', clouds == null ? t('unknown') : `${Math.round(clouds * 100)}%`);
+  setText('g-sky', `${fmt(tonightSqm)} · B${bortleFromSqm(tonightSqm)}`);
+  setText('g-darkest', dirs[plan.darkestSector]);
+  setText('g-glow', dirs[plan.brightestSector]);
+
+  const typeKey = { nebula: 'typeNebula', cluster: 'typeCluster', galaxy: 'typeGalaxy', double: 'typeDouble', milkyway: 'typeMilkyway' };
+  const list = [...plan.visible.slice(0, 5), ...plan.targets.filter(x => !x.visible).slice(0, 2)];
+  $('g-targets').innerHTML =
+    (plan.visible.length === 0 ? `<p class="empty">${t('gNone')}</p>` : '') +
+    list.map(o => `
+      <div class="target ${o.visible ? '' : 'dim'}">
+        <div><span class="t-name">${lang === 'ar' ? o.ar : o.en}</span> <span class="t-type">${t(typeKey[o.type])} · ${o.id}</span></div>
+        <div class="t-pos">${dirs[o.sector]} · ${t('gAlt')} ${ltr(Math.round(o.alt) + '°')}${o.visible ? '' : ` · ${t('gHidden')}`}</div>
+      </div>`).join('');
+  drawCompass(plan);
+  updateCompassTargets();
+}
+
+function drawCompass(plan) {
+  const dirs = DIRECTIONS[getLang()];
+  const R = 100;
+  const polar = (az, r) => [r * Math.sin(az * Math.PI / 180), -r * Math.cos(az * Math.PI / 180)];
+  let html = '<circle r="100" fill="var(--surface-2)" stroke="var(--border)"/>';
+  plan.domeLevel.forEach((v, i) => {
+    const [x1, y1] = polar(i * 45 - 22.5, R), [x2, y2] = polar(i * 45 + 22.5, R);
+    const fill = i === plan.darkestSector ? 'rgba(134,207,163,0.45)' : `rgba(233,192,122,${(0.08 + 0.6 * v).toFixed(2)})`;
+    html += `<path d="M0 0 L${x1} ${y1} A${R} ${R} 0 0 1 ${x2} ${y2} Z" fill="${fill}" stroke="var(--border)"/>`;
+  });
+  html += [30, 60].map(a => `<circle r="${R * (90 - a) / 90}" fill="none" stroke="var(--border)" stroke-dasharray="3 3"/>`).join('');
+  dirs.forEach((d, i) => {
+    if (i % 2) return;
+    const [x, y] = polar(i * 45, R + 14);
+    html += `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" class="c-label">${d}</text>`;
+  });
+  plan.visible.slice(0, 5).forEach(o => {
+    const [x, y] = polar(o.az, R * (90 - o.alt) / 90);
+    html += `<circle cx="${x}" cy="${y}" r="4" fill="var(--accent)"/><text x="${x + 6}" y="${y - 6}" class="c-obj">${o.id}</text>`;
+  });
+  if (plan.moon.up) {
+    const [x, y] = polar(plan.moon.az, R * (90 - plan.moon.alt) / 90);
+    html += `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="16">🌙</text>`;
+  }
+  const svg = $('compass');
+  svg.innerHTML = html;
+  svg.setAttribute('aria-label', t('compassLabel').replace('{dark}', dirs[plan.darkestSector]).replace('{glow}', dirs[plan.brightestSector]));
+}
+
+// ── Live compass (phone orientation sensor) ──
+function bindCompass() {
+  lc.compass = new LiveCompass(h => { lc.heading = h; drawLiveCompass(); });
+  $('lc-select').addEventListener('change', e => { lc.target = e.target.value; lc.lastSaid = ''; drawLiveCompass(); });
+  $('lc-start').addEventListener('click', async () => {
+    if (lc.live) { stopCompass(); return; }
+    setText('lc-status', '…');
+    const decl = current ? declination(current.lat) : 0;
+    const res = await lc.compass.start(decl);
+    if (res === 'ok') {
+      lc.live = true;
+      setText('lc-status', t('lcLive').replace('{decl}', decl.toFixed(1)));
+      $('lc-start').textContent = t('lcStop');
+      lc.timer = setInterval(updateCompassTargets, 60000);    // sky objects move ~0.25°/min
+    } else {
+      setText('lc-status', t({ denied: 'lcDenied', unsupported: 'lcUnsupported', nosensor: 'lcNoSensor' }[res]));
+    }
+    drawLiveCompass();
+  });
+  drawLiveCompass();
+}
+
+function stopCompass() {
+  lc.compass.stop();
+  lc.live = false;
+  lc.heading = null;
+  clearInterval(lc.timer);
+  $('lc-start').textContent = t('lcStart');
+  setText('lc-status', '');
+  drawLiveCompass();
+}
+
+// Everything worth pointing at, positioned for right now
+function updateCompassTargets() {
+  if (!result) return;
+  const { lat, lon } = result.place;
+  const lang = getLang();
+  const now = new Date();
+  const list = [
+    { id: 'darkest', label: t('lcDarkest'), az: result.plan.darkestSector * 45, alt: null },
+    { id: 'glow', label: t('lcGlow'), az: result.plan.brightestSector * 45, alt: null }
+  ];
+  const moon = moonPosition(now, lat, lon);
+  list.push({ id: 'moon', label: t('lcMoon'), az: moon.az, alt: moon.alt });
+  for (const b of BODIES) {
+    if (b.key === 'moon') continue;
+    const e = planetEphemeris(b.key, now);
+    const p = raDecToAltAz(e.ra, e.dec, now, lat, lon);
+    if (p.alt > 0) list.push({ id: b.key, label: `🪐 ${b[lang]}`, az: p.az, alt: p.alt });
+  }
+  for (const o of CATALOG) {
+    const p = raDecToAltAz(o.ra, o.dec, now, lat, lon);
+    if (p.alt > 15) list.push({ id: o.id, label: `✨ ${lang === 'ar' ? o.ar : o.en} (${o.id})`, az: p.az, alt: p.alt });
+  }
+  lc.targets = list;
+  if (!list.some(x => x.id === lc.target)) lc.target = 'darkest';
+  $('lc-select').innerHTML = list.map(x => `<option value="${x.id}"${x.id === lc.target ? ' selected' : ''}>${x.label}</option>`).join('');
+  drawLiveCompass();
+}
+
+function drawLiveCompass() {
+  const svg = $('lc-dial');
+  if (!svg) return;
+  const dirs = DIRECTIONS[getLang()];
+  const heading = lc.heading ?? 0;                    // no sensor: north up
+  const tg = lc.targets.find(x => x.id === lc.target);
+  const R = 100;
+  const pt = (az, r) => [r * Math.sin(az * Math.PI / 180), -r * Math.cos(az * Math.PI / 180)];
+  let rose = `<circle r="${R}" fill="var(--surface-2)" stroke="var(--control)"/>`;
+  for (let a = 0; a < 360; a += 15) {
+    const [x1, y1] = pt(a, R), [x2, y2] = pt(a, a % 45 ? R - 6 : R - 12);
+    rose += `<line class="lc-tick" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-width="${a % 45 ? 1 : 2}"/>`;
+  }
+  dirs.forEach((d, i) => {
+    const [x, y] = pt(i * 45, R - 26);
+    rose += `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" class="lc-lbl${i === 0 ? ' lc-n' : ''}" transform="rotate(${heading} ${x} ${y})">${i % 2 ? '' : d}</text>`;
+  });
+  if (tg) {
+    const [x, y] = pt(tg.az, R - 6);
+    rose += `<line x1="0" y1="0" x2="${x}" y2="${y}" stroke="var(--good)" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="${x}" cy="${y}" r="8" fill="var(--good)"/>`;
+  }
+  svg.innerHTML = `<g transform="rotate(${-heading})">${rose}</g>
+    <path d="M0 -118 L-9 -100 L9 -100 Z" fill="var(--accent)"/><circle r="5" fill="var(--text)"/>`;
+
+  setText('lc-heading', lc.heading == null ? '—' : `${dirs[sectorOf(lc.heading)]} · ${ltr(Math.round(lc.heading) + '°')}`);
+  if (!tg) { setText('lc-instr', '—'); return; }
+  let instr;
+  if (lc.heading == null) {
+    instr = t('lcNoSensorDir').replaceAll('{dir}', dirs[sectorOf(tg.az)]).replace('{az}', Math.round(tg.az));
+  } else {
+    const d = turn(lc.heading, tg.az);
+    instr = Math.abs(d) < 8 ? t('lcOnTarget') : t(d > 0 ? 'lcRight' : 'lcLeft').replace('{deg}', Math.round(Math.abs(d)));
+  }
+  setText('lc-alt', tg.alt == null ? t('lcAltHorizon') : tg.alt < 0 ? t('lcBelow') : t('lcAlt').replace('{alt}', Math.round(tg.alt)));
+  setText('lc-instr', instr);
+  // screen readers: announce only when the advice changes, at most every 2 s
+  const now = Date.now();
+  if (instr !== lc.lastSaid && now - lc.lastSaidAt > 2000) {
+    setText('lc-sr', instr);
+    lc.lastSaid = instr;
+    lc.lastSaidAt = now;
+  }
+}
+
+// ── Tab 3: lighting simulator (runs through the AI model) ──
+function bindSimulator() {
+  [['ds-useful', 'useful'], ['ds-targeted', 'targeted'], ['ds-dimming', 'dimming']].forEach(([id, key]) => {
+    const input = $(id);
+    input.addEventListener('input', () => {
+      setText(id + '-v', input.value + '%');
+      sim.setParam(key, parseInt(input.value, 10));
+      updateSimulator();
+    });
+  });
+  $('ds-curfew').addEventListener('change', e => { sim.setParam('curfew', e.target.checked); updateSimulator(); });
+  $('ds-warm').addEventListener('change', e => { sim.setParam('warmColor', e.target.checked); updateSimulator(); });
+}
+
+function updateSimulator(redrawBefore = false) {
+  if (!result) return;
+  const r = sim.calculateImpact(result.engine, result.refInputs);
+  setText('ds-gain', (r.totalGain >= 0 ? '+' : '') + r.totalGain.toFixed(2));
+  setText('ds-stars', '+' + r.additionalStars.toLocaleString(locale()));
+  setText('ds-energy', r.energyReductionPct + '%');
+  setText('ds-factor', r.lightFactor.toFixed(2));
+  setText('sky-before-mag', `${r.baseMag.toFixed(2)} · B${bortleFromSqm(r.baseMag)}`);
+  setText('sky-after-mag', `${r.simulatedMag.toFixed(2)} · B${bortleFromSqm(r.simulatedMag)}`);
+  if ($('panel-sim').hidden) return;
+  if (redrawBefore) renderSkyCanvas('sky-before-canvas', r.baseMag, r.starsBefore);
+  renderSkyCanvas('sky-after-canvas', r.simulatedMag, r.starsAfter);
+}
+
+// ── Tab 4: planets — solar-system forecast + calibration through the AI model ──
+function bindPlanets() {
+  const sel = $('pl-instrument');
+  sel.addEventListener('change', () => { pl.inst = sel.value; pl.cut = 0; renderPlanets(); });
+  $('pl-list').addEventListener('click', e => {
+    const b = e.target.closest('[data-body]');
+    if (b) { pl.key = b.dataset.body; pl.cut = 0; renderPlanets(); }
+  });
+  $('pl-cut-range').addEventListener('input', e => { pl.cut = +e.target.value; updateCalibration(); });
+  $('pl-auto').addEventListener('click', () => {
+    if (pl.autoCut == null) return;
+    pl.cut = pl.autoCut;
+    $('pl-cut-range').value = pl.cut;
+    updateCalibration();
+  });
+}
+
+const fill = (key, vars) => Object.entries(vars).reduce((s, [k, v]) => s.replaceAll(`{${k}}`, v), t(key));
+
+async function renderPlanets() {
+  if (!result) return;
+  const lang = getLang();
+  const dirs = DIRECTIONS[lang];
+  const inst = INSTRUMENTS.find(i => i.key === pl.inst);
+  $('pl-instrument').innerHTML = INSTRUMENTS.map(i => `<option value="${i.key}"${i.key === pl.inst ? ' selected' : ''}>${i[lang]}</option>`).join('');
+
+  // each body is judged under the REAL sky at its own best time (moon + clouds of that hour)
+  const bodies = planetsTonight(result.place, result.skyAt, inst.mm, new Date());
+  if (!pl.key || !bodies.some(b => b.key === pl.key)) {
+    pl.key = (bodies.find(b => b.key === 'saturn' && b.up) || bodies.find(b => b.key === 'jupiter' && b.up) || bodies.find(b => b.up && b.key !== 'moon') || bodies[0]).key;
+  }
+  $('pl-list').innerHTML = bodies.map(b => {
+    const state = !b.up ? t('plBelow') : b.visibleGoal ? fill('plStateGoal', { goal: b.goal[lang] })
+      : b.visibleBody ? fill('plStateBody', { goal: b.goal[lang] }) : t('plStateNo');
+    const icon = !b.up ? '⬇️' : b.visibleGoal ? '✅' : b.visibleBody ? '🟡' : '⛔';
+    return `<button type="button" class="pl-item${b.up ? '' : ' dim'}" data-body="${b.key}" aria-pressed="${b.key === pl.key}">
+      <span><span class="pl-name">${icon} ${b[lang]}</span> <span class="pl-state">${state}</span></span>
+      <span class="pl-pos">${b.up ? `${dirs[sectorOf(b.az)]} · ${ltr(Math.round(b.alt) + '°')} · ${clock(b.time)}` : ''}</span></button>`;
+  }).join('');
+
+  const b = bodies.find(x => x.key === pl.key);
+  const name = b[lang], goal = b.goal[lang], instName = inst[lang];
+  const { place } = result;
+  // model inputs at the observing time of this body
+  pl.b = b; pl.inst_ = inst;
+  pl.inputs = result.inputsAt(b.time);
+  pl.moon = moonText(b.time, place.lat, place.lon);
+  pl.cloud = cloudText(cloudAt(result.forecast, b.time));
+  setText('pl-title', fill('plTitle', { goal, name }));
+  setText('pl-best', b.up ? `${clock(b.time)} · ${dirs[sectorOf(b.az)]} · ${ltr(Math.round(b.alt) + '°')}` : t('plBelow'));
+  setText('pl-mag', ltr(b.mag.toFixed(1)));
+  setText('pl-slider-sub', fill('plSliderSub', { time: clock(b.time), moon: pl.moon, cloud: pl.cloud }));
+
+  let fix = null, verdict;
+  pl.autoCut = null;
+  if (b.requiredSqm == null) {
+    setText('pl-need', t('plImpossible'));
+    setText('pl-cut', '—');
+    verdict = fill('plVerdictScope', { name, inst: instName });
+  } else {
+    fix = requiredReduction(result.engine, pl.inputs, b.requiredSqm);
+    const need = b.requiredSqm < 16 ? t('plAnySky') : `${b.requiredSqm.toFixed(2)} · B${bortleFromSqm(b.requiredSqm)}`;
+    setText('pl-need', need);
+    setText('pl-cut', !fix ? t('plTooBright') : fix.reduction === 0 ? t('plNoCut') : `${Math.ceil(fix.reduction * 100)}%`);
+    if (fix) pl.autoCut = Math.ceil(fix.reduction * 100);
+    // if even all lights off is not enough, is it the Moon?
+    const moonBlocks = !fix && requiredReduction(result.engine, result.inputsAt(b.time, { moon_illum: 0, moon_alt: -10, moon_light: 0 }), b.requiredSqm);
+    verdict = !b.up ? fill('plVerdictBelow', { name })
+      : fix && fix.reduction === 0 ? fill('plVerdictGoal', { goal, name, inst: instName, time: clock(b.time), dir: dirs[sectorOf(b.az)] })
+      : fix ? fill('plVerdictCut', { goal, name, inst: instName, time: clock(b.time), need: b.requiredSqm.toFixed(2), cut: Math.ceil(fix.reduction * 100) })
+      : moonBlocks ? fill('plVerdictMoon', { name, moon: pl.moon, need: b.requiredSqm.toFixed(2) })
+      : fill('plVerdictFar', { goal, name, inst: instName });
+  }
+  setText('pl-verdict', verdict);
+  const auto = $('pl-auto');
+  auto.textContent = pl.autoCut == null ? t('plAutoNo') : pl.autoCut === 0 ? t('plAutoNone') : fill('plAuto', { cut: pl.autoCut });
+  auto.disabled = !b.up || pl.autoCut == null || pl.autoCut === 0;
+  $('pl-cut-range').disabled = !b.up;
+  $('pl-cut-range').value = pl.cut;
+  $('pl-canvas').setAttribute('aria-label', fill('plCanvas', { name }));
+  await updateCalibration();
+}
+
+// Slider → AI model → sky at the observing time → can the instrument reach the target?
+async function updateCalibration() {
+  const b = pl.b;
+  if (!b || !pl.inputs) return;
+  const lang = getLang();
+  setText('pl-cut-v', ltr(`${pl.cut}%`));
+  const sky = result.engine.predictWithLightFactor(pl.inputs, Math.max(0.001, 1 - pl.cut / 100));
+  const lim = limitingMag(sky, pl.inst_.mm);
+  const sees = b.up && b.need <= lim;
+  const vars = { sky: sky.toFixed(2), b: bortleFromSqm(sky), goal: b.goal[lang], inst: pl.inst_[lang], name: b[lang],
+    need: b.requiredSqm == null ? t('plImpossible') : b.requiredSqm.toFixed(2) };
+  $('pl-read').innerHTML = !b.up ? fill('plReadBelow', vars)
+    : `<span class="${sees ? 'ok' : 'no'}">${fill(sees ? 'plReadOk' : 'plReadNo', vars)}</span>`;
+  setText('pl-caption', fill('plCaption', { sqm: sky.toFixed(2) }));
+  if ($('panel-planets').hidden || pl.glFailed) return;
+  try {
+    if (!pl.viewer) {
+      const { PlanetViewer } = await import('./modules/planetViewer.js');
+      pl.viewer = pl.viewer || new PlanetViewer($('pl-canvas'), { reducedMotion: REDUCED_MOTION });
+    }
+    pl.viewer.show({ key: b.key, sqm: sky, showMoons: sees, altitude: b.up ? b.alt : 5 });
+  } catch (err) {
+    console.warn('3D view unavailable', err);
+    pl.glFailed = true;
+    setText('pl-caption', t('plNoGl'));
+  }
+}
+
 function seededRandom(seed) {
   let s = seed;
-  return function() {
-    s = (s * 16807) % 2147483647;
-    return (s - 1) / 2147483646;
-  };
+  return () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
 }
 
-function renderSkyCanvas(canvasId, mag, starCount) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
+function renderSkyCanvas(id, mag, starCount) {
+  const canvas = $(id);
+  const w = canvas.width = Math.max(1, canvas.clientWidth) * 2;
+  const h = canvas.height = Math.max(1, canvas.clientHeight) * 2;
   const ctx = canvas.getContext('2d');
-  
-  // Protect against zero dimensions (display:none) which crashes createRadialGradient
-  const w = canvas.width = (canvas.offsetWidth || 400) * 2;
-  const h = canvas.height = (canvas.offsetHeight || 200) * 2;
+  const glow = Math.max(0, Math.min(1, (21.5 - mag) / 4.5));   // 0 = dark sky, 1 = city
 
-  // Protect against NaN
-  mag = mag || 20;
-  starCount = starCount || 500;
-
-  // Sky glow gradient based on magnitude
-  // Lower mag = brighter sky = more haze and horizon glow
-  // Higher mag = darker sky = deep blue and thousands of stars
-  // Adjusted formula to make the transition visually dramatic
-  const brightness = Math.max(0, Math.min(1, (21.5 - mag) / 4.5));
-
-  ctx.clearRect(0, 0, w, h); // Fix glitching
-
-  // Realistic night sky base (always deep blue/black, but hazier when polluted)
-  const grad = ctx.createLinearGradient(0, h, 0, 0);
-  if (brightness > 0.6) {
-    // Heavily polluted (Hazy gray-blue)
-    grad.addColorStop(0, `rgba(35, 40, 55, 1)`);
-    grad.addColorStop(0.5, `rgba(20, 25, 40, 1)`);
-    grad.addColorStop(1, `rgba(15, 15, 30, 1)`);
-  } else if (brightness > 0.3) {
-    // Moderate pollution (Darker blue)
-    grad.addColorStop(0, `rgba(20, 25, 45, 1)`);
-    grad.addColorStop(0.5, `rgba(10, 15, 30, 1)`);
-    grad.addColorStop(1, `rgba(5, 5, 20, 1)`);
-  } else {
-    // Dark sky (Deep midnight/black)
-    grad.addColorStop(0, `rgba(6, 8, 18, 1)`);
-    grad.addColorStop(0.5, `rgba(3, 4, 12, 1)`);
-    grad.addColorStop(1, `rgba(1, 2, 8, 1)`);
-  }
-
-  ctx.fillStyle = grad;
+  const sky = ctx.createLinearGradient(0, h, 0, 0);
+  sky.addColorStop(0, `rgb(${Math.round(12 + 40 * glow)},${Math.round(14 + 34 * glow)},${Math.round(26 + 34 * glow)})`);
+  sky.addColorStop(1, `rgb(${Math.round(4 + 14 * glow)},${Math.round(6 + 14 * glow)},${Math.round(14 + 18 * glow)})`);
+  ctx.fillStyle = sky;
   ctx.fillRect(0, 0, w, h);
-
-  // City glow dome at horizon (yellowish/white skyglow reflecting off particles)
-  if (brightness > 0.1) {
-    const radius = Math.max(1, h * 0.85); // Prevent IndexSizeError in browser rendering
-    const glowGrad = ctx.createRadialGradient(w * 0.5, h * 1.0, 0, w * 0.5, h * 1.0, radius);
-    const glowAlpha = Math.min(1.0, brightness * 0.7);
-    // Use an amber/warm-white hue to simulate city streetlights
-    glowGrad.addColorStop(0, `rgba(255, 210, 140, ${glowAlpha})`);
-    glowGrad.addColorStop(0.4, `rgba(200, 150, 90, ${glowAlpha * 0.4})`);
-    glowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = glowGrad;
+  if (glow > 0.1) {
+    const dome = ctx.createRadialGradient(w / 2, h, 0, w / 2, h, h);
+    dome.addColorStop(0, `rgba(233,192,122,${(glow * 0.45).toFixed(2)})`);
+    dome.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = dome;
     ctx.fillRect(0, 0, w, h);
   }
-
-  // Draw stars — use seeded random so positions stay consistent
   const rng = seededRandom(42);
-  // Visually multiply stars and allow a much higher cap to create a dramatic "wow" effect when slider is moved
-  const maxStars = Math.min(starCount * 3, 2500);
-  const starAlpha = Math.max(0.2, 1 - Math.pow(brightness, 1.5));
-
-  for (let i = 0; i < maxStars; i++) {
-    const x = rng() * w;
-    const y = rng() * h * 0.85;
-    const r = rng() * 1.8 + 0.3;
-    const a = (rng() * 0.5 + 0.5) * starAlpha;
-
-    // Star color variation
-    const colors = ['255,255,255', '200,220,255', '255,240,200', '180,210,255'];
-    const c = colors[Math.floor(rng() * colors.length)];
-
+  const n = Math.min(Math.round(starCount * 0.6), 2500);
+  const alpha = Math.max(0.25, 1 - glow ** 1.5);
+  for (let i = 0; i < n; i++) {
+    const x = rng() * w, y = rng() * h * 0.9, r = rng() * 1.6 + 0.4;
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(${c}, ${a})`;
-    if (r > 1.2) {
-      ctx.shadowBlur = 4;
-      ctx.shadowColor = `rgba(${c}, ${a * 0.5})`;
-    }
+    ctx.fillStyle = `rgba(235,240,255,${((rng() * 0.5 + 0.5) * alpha).toFixed(2)})`;
     ctx.fill();
-    ctx.shadowBlur = 0;
   }
 }
 
-// ── Leaflet Map ──
+// ── Model transparency section ──
+const FEATURE_NAMES = {
+  ar: { log_rad_point: 'إشعاع ناسا ٢٠٢٤ في الموقع', log_rad_skyglow: 'توهج المدن المحيطة', log_rad_10km: 'الإشعاع ضمن ١٠ كم', log_rad_10_50km: 'الإشعاع ١٠–٥٠ كم', log_rad_50_160km: 'الإشعاع ٥٠–١٦٠ كم', log_light_point: 'ضوء ناسا في الموقع', log_skyglow: 'توهج المدن المحيطة', log_light_10km: 'الضوء ضمن ١٠ كم', log_light_10_50km: 'الضوء ١٠–٥٠ كم', log_light_50_160km: 'الضوء ٥٠–١٦٠ كم', solar_hour: 'وقت الليل', cloud: 'الغيوم', moon_light: 'ضوء القمر', moon_illum: 'طور القمر', moon_alt: 'ارتفاع القمر', elevation_km: 'الارتفاع', sun_alt: 'الشفق', abs_lat: 'خط العرض', season: 'الموسم' },
+  en: { log_rad_point: 'NASA 2024 radiance at site', log_rad_skyglow: 'Glow from nearby cities', log_rad_10km: 'Radiance within 10 km', log_rad_10_50km: 'Radiance 10–50 km', log_rad_50_160km: 'Radiance 50–160 km', log_light_point: 'NASA light at site', log_skyglow: 'Glow from nearby cities', log_light_10km: 'Light within 10 km', log_light_10_50km: 'Light 10–50 km', log_light_50_160km: 'Light 50–160 km', solar_hour: 'Time of night', cloud: 'Clouds', moon_light: 'Moonlight', moon_illum: 'Moon phase', moon_alt: 'Moon altitude', elevation_km: 'Elevation', sun_alt: 'Twilight', abs_lat: 'Latitude', season: 'Season' }
+};
+
+function renderModelSection() {
+  const primary = modelV2 || model;
+  const m = primary.metrics;
+  if (!m) return;
+  const ai = m.cv[m.model] || m.cv.orbit_ai_v2;
+  const sat = m.cv.satellite_only;
+  setText('m-kpi', `${m.improvement_percent}%`);
+  setText('m-mae', ltr(`${sat.MAE} → ${ai.MAE} mag`));
+  setText('m-within', m.within_half_mag_pct != null ? `${m.within_half_mag_pct}%` : '—');
+  setText('m-data', `${m.training_rows.toLocaleString(locale())} · ${m.unique_locations.toLocaleString(locale())} ${t('locations')}`);
+  const names = FEATURE_NAMES[getLang()];
+  const imp = Object.entries(primary.importances).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const max = imp[0][1];
+  $('m-importance').innerHTML = imp.map(([k, v]) => `
+    <div class="bar"><span>${names[k] || k}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${(v / max) * 100}%"></div></div>
+      <em>${Math.round(v * 100)}%</em></div>`).join('');
+}
+
+// ── Map ──
 function initMap() {
-  const container = document.getElementById('map');
-  if (!container || !window.L) return;
-
-  map = L.map('map', { center: [36.35, 43.13], zoom: 9, zoomControl: false });
-  L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-  // Free dark basemap — OSM tiles with CSS dark filter (no API key needed)
+  if (!window.L) return;
+  map = L.map('map', { center: [36.2, 43.2], zoom: 8, zoomControl: false });
+  L.control.zoom({ position: 'bottomleft' }).addTo(map);
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors',
-    maxZoom: 19,
-    className: 'dark-tiles'
+    attribution: '&copy; OpenStreetMap', maxZoom: 19, className: 'base-tiles'
   }).addTo(map);
 
-  // Observation sites
-  const sites = [
-    { key: 'sinjar', name: 'Mt. Sinjar (Bortle 2)', coords: [36.371, 41.874], c: '#00e676', mag: '21.85' },
-    { key: 'hatra', name: 'Al-Hatra (Bortle 3)', coords: [35.589, 42.718], c: '#00d4ff', mag: '21.40' },
-    { key: 'badush', name: 'Badush (Bortle 4)', coords: [36.561, 43.112], c: '#76ff03', mag: '20.75' },
-    { key: 'baashiqa', name: "Ba'ashiqa (Bortle 5)", coords: [36.452, 43.348], c: '#ffab00', mag: '19.60' },
-    { key: 'mosulCenter', name: 'Mosul Center (Bortle 8)', coords: [36.359, 43.131], c: '#ff4060', mag: '17.00' },
-    { key: 'baghdadCenter', name: 'Baghdad Center (Bortle 9)', coords: [33.3152, 44.3661], c: '#ff1744', mag: '16.80' },
-    { key: 'basraCenter', name: 'Basra Center (Bortle 8)', coords: [30.5081, 47.7835], c: '#ff4060', mag: '17.10' },
-    { key: 'erbilCenter', name: 'Erbil Center (Bortle 8)', coords: [36.1911, 44.0092], c: '#ff4060', mag: '17.50' },
-    { key: 'najafCenter', name: 'Najaf Center (Bortle 8)', coords: [31.9928, 44.3168], c: '#ff4060', mag: '17.60' },
-    { key: 'nasiriyahCenter', name: 'Nasiriyah (Bortle 8)', coords: [31.0427, 46.2592], c: '#ff4060', mag: '17.80' },
-    { key: 'sulaymaniyahCenter', name: 'Sulaymaniyah (Bortle 8)', coords: [35.5558, 45.4351], c: '#ffab00', mag: '17.40' },
-    { key: 'ramadiCenter', name: 'Ramadi (Bortle 7)', coords: [33.4243, 43.3021], c: '#ffab00', mag: '18.20' },
-    { key: 'kirkukCenter', name: 'Kirkuk (Bortle 8)', coords: [35.4673, 44.3855], c: '#ff4060', mag: '17.50' },
-    { key: 'rutba', name: 'Ar-Rutbah Desert (Bortle 2)', coords: [33.0381, 40.2806], c: '#00e676', mag: '21.90' }
-  ];
-
-  window._mapMarkers = {};
-
-  sites.forEach(s => {
-    const icon = L.divIcon({
-      className: '',
-      html: `<div style="width:20px;height:20px;position:relative;">
-        <div style="position:absolute;inset:4px;border-radius:50%;background:${s.c};box-shadow:0 0 12px ${s.c};"></div>
-        <div style="position:absolute;inset:0;border-radius:50%;border:2px solid ${s.c};animation:ring-pulse 2.5s infinite;opacity:0.5;"></div>
-      </div>`,
-      iconSize: [20, 20],
-      iconAnchor: [10, 10]
-    });
-
-    const marker = L.marker(s.coords, { icon }).addTo(map);
-    marker.bindPopup(`
-      <strong style="color:${s.c}">${s.name}</strong><br/>
-      ${s.mag} mag/arcsec²<br/>
-      <button class="btn btn-ghost" style="padding:4px 10px;font-size:0.65rem;margin-top:6px;width:100%;justify-content:center;cursor:pointer;" onclick="window.scrollToCalib('${s.key}')">🎯 Calibrate for this Site</button>
-    `);
-    marker.on('click', () => {
-      document.getElementById('site-select').value = s.key;
-      const cardSel = document.getElementById('calib-site-select');
-      if (cardSel) cardSel.value = s.key;
-      esp32.setSite(s.key);
-      updateAI();
-      updateDarkSky(true);
-      resetPlanetViewModeToCurrent();
-      updateAutoCalibration();
-    });
-    window._mapMarkers[s.key] = marker;
+  nasaLayer = L.tileLayer(GIBS_BLACK_MARBLE.url, {
+    attribution: GIBS_BLACK_MARBLE.attribution,
+    maxNativeZoom: GIBS_BLACK_MARBLE.maxNativeZoom,
+    maxZoom: GIBS_BLACK_MARBLE.maxZoom,
+    opacity: 0.6
+  }).addTo(map);
+  $('nasa-toggle').addEventListener('change', e => {
+    if (e.target.checked) nasaLayer.addTo(map); else map.removeLayer(nasaLayer);
   });
 
-  // Gas flare exclusion zones
-  [
-    { lat: 35.801, lon: 43.272, r: 9000, name: 'Qayyarah Oil Flares' },
-    { lat: 35.912, lon: 43.148, r: 6500, name: 'Najmah Oil Flares' }
-  ].forEach(f => {
-    L.circle([f.lat, f.lon], {
-      radius: f.r,
-      color: '#ff4060',
-      weight: 1.5,
-      dashArray: '5,5',
-      fillColor: '#ff4060',
-      fillOpacity: 0.12
-    }).addTo(map).bindTooltip(`⚠️ ${f.name} — Masked from model`, { sticky: true });
-  });
-
-  // Enable NASA overlay by default
-  const nasaBtn = document.getElementById('btn-nasa-layer');
-  if (nasaBtn) {
-    nasaBtn.click();
+  for (const [key, s] of Object.entries(SITES)) {
+    siteMarkers[key] = L.marker([s.lat, s.lon], {
+      icon: L.divIcon({ className: '', html: '<div class="site-pin"></div>', iconSize: [16, 16], iconAnchor: [8, 8] }),
+      title: s.nameEn
+    }).addTo(map)
+      .bindTooltip(() => placeName(s))
+      .on('click', () => selectSite(key));
   }
 
-  // Pollution Glow (Heatmap Effect) for major cities
-  const pollutionCenters = [
-    { name: 'Mosul', coords: [36.35, 43.13], mult: 1.0 },
-    { name: 'Baghdad', coords: [33.3152, 44.3661], mult: 2.5 }, // Baghdad is much larger
-    { name: 'Basra', coords: [30.5081, 47.7835], mult: 1.5 },
-    { name: 'Erbil', coords: [36.1911, 44.0092], mult: 1.2 },
-    { name: 'Najaf', coords: [31.9928, 44.3168], mult: 1.1 },
-    { name: 'Nasiriyah', coords: [31.0427, 46.2592], mult: 1.0 },
-    { name: 'Sulaymaniyah', coords: [35.5558, 45.4351], mult: 1.1 },
-    { name: 'Ramadi', coords: [33.4243, 43.3021], mult: 0.9 },
-    { name: 'Kirkuk', coords: [35.4673, 44.3855], mult: 1.1 }
-  ];
-
-  const baseZones = [
-    { r: 35000, c: '#00d4ff', o: 0.08, desc: 'Bortle 4-5 (Rural Transition)' },
-    { r: 18000, c: '#ffab00', o: 0.2, desc: 'Bortle 6-7 (Suburbs)' },
-    { r: 8000, c: '#ff4060', o: 0.35, desc: 'Bortle 8-9 (Inner City)' }
-  ];
-  
-  pollutionCenters.forEach(center => {
-    baseZones.forEach(zone => {
-      L.circle(center.coords, {
-        radius: zone.r * center.mult,
-        color: 'none',
-        fillColor: zone.c,
-        fillOpacity: zone.o,
-        className: 'pollution-glow'
-      }).addTo(map).bindTooltip(`${center.name} - ${zone.desc}`);
-    });
+  GAS_FLARES.forEach(f => {
+    L.circle([f.lat, f.lon], { radius: f.radiusM, color: '#e9c07a', weight: 1.5, dashArray: '5,5', fillOpacity: 0.08 })
+      .addTo(map).bindTooltip(() => (getLang() === 'ar' ? f.nameAr : f.nameEn), { sticky: true });
   });
 
-  // Real-time Satellites (Multi)
-  const satMarkers = {};
-  
-  satTracker.satellites.forEach(sat => {
-    // Satellite Icon
-    const satIcon = L.divIcon({
-      className: 'sat-smooth',
-      html: `<div style="font-size:24px; animation: bob 2s infinite;">${sat.icon}</div>`,
-      iconSize: [30, 30],
-      iconAnchor: [15, 15]
-    });
-    
-    const initPos = satTracker.getCurrentPosition(sat.id);
-    const marker = L.marker([initPos ? initPos.lat : 0, initPos ? initPos.lon : 0], { icon: satIcon, zIndexOffset: 1000 }).addTo(map);
-    marker.bindTooltip(`${sat.name} - Realtime`, { direction: 'top' });
-    satMarkers[sat.id] = marker;
-
-    // Draw Orbit Path (Past 90m and Future 90m)
-    const orbitPath = satTracker.getOrbitTrack(sat.id, new Date(), 90, 90, 2);
-    
-    // Split path if it wraps around the date line
-    let currentSegment = [];
-    const segments = [currentSegment];
-    for (let i = 0; i < orbitPath.length; i++) {
-      if (i > 0 && Math.abs(orbitPath[i][1] - orbitPath[i-1][1]) > 180) {
-        currentSegment = [];
-        segments.push(currentSegment);
-      }
-      currentSegment.push(orbitPath[i]);
-    }
-    
-    segments.forEach(seg => {
-      if (seg.length > 1) {
-        L.polyline(seg, { color: sat.color, weight: 2, dashArray: '4, 6', opacity: 0.5 }).addTo(map);
-      }
-    });
+  map.on('click', async e => {
+    const { lat, lng } = e.latlng;
+    const alt = await fetchElevation(lat, lng);
+    const label = `${lat.toFixed(3)}°, ${lng.toFixed(3)}°`;
+    predictPlace({ key: 'custom', lat, lon: lng, alt, nameEn: label, nameAr: label });
   });
-  
-  // Update positions smoothly
+
+  initSatellites();
+  $('btn-view-mosul').addEventListener('click', () => map.flyTo([36.35, 43.13], 10, { duration: 0.8, animate: !REDUCED_MOTION }));
+  $('btn-view-iraq').addEventListener('click', () => map.flyTo([33.3, 44.3], 6, { duration: 0.8, animate: !REDUCED_MOTION }));
+}
+
+function highlightMarker(place) {
+  if (!map) return;
+  Object.entries(siteMarkers).forEach(([k, m]) => {
+    m.getElement()?.querySelector('.site-pin')?.classList.toggle('active', k === place.key);
+  });
+  if (customMarker) { map.removeLayer(customMarker); customMarker = null; }
+  if (place.key === 'custom') {
+    customMarker = L.marker([place.lat, place.lon], {
+      icon: L.divIcon({ className: '', html: '<div class="site-pin active"></div>', iconSize: [16, 16], iconAnchor: [8, 8] }),
+      interactive: false
+    }).addTo(map);
+  }
+}
+
+function initSatellites() {
+  const tracker = new SatelliteTracker();
+  const markers = {};
+  tracker.satellites.forEach(sat => {
+    const pos = tracker.getCurrentPosition(sat.id);
+    if (!pos) return;
+    markers[sat.id] = L.marker([pos.lat, pos.lon], {
+      icon: L.divIcon({ className: '', html: `<div style="font-size:18px">${sat.icon}</div>`, iconSize: [22, 22], iconAnchor: [11, 11] }),
+      zIndexOffset: 1000
+    }).addTo(map).bindTooltip(sat.name, { direction: 'top' });
+  });
   setInterval(() => {
-    satTracker.satellites.forEach(sat => {
-      const pos = satTracker.getCurrentPosition(sat.id);
-      if (pos && satMarkers[sat.id]) {
-        satMarkers[sat.id].setLatLng([pos.lat, pos.lon]);
-      }
+    tracker.satellites.forEach(sat => {
+      const pos = tracker.getCurrentPosition(sat.id);
+      if (pos && markers[sat.id]) markers[sat.id].setLatLng([pos.lat, pos.lon]);
     });
-  }, 1000);
+  }, 5000);
+}
 
-  // Map Zoom Controls
-  document.getElementById('btn-view-mosul')?.addEventListener('click', () => {
-    map.flyTo([36.35, 43.13], 10, { duration: 1.0 });
-  });
-  document.getElementById('btn-view-iraq')?.addEventListener('click', () => {
-    map.flyTo([33.3, 44.3], 6, { duration: 1.0 });
-  });
-  document.getElementById('btn-view-world')?.addEventListener('click', () => {
-    map.flyTo([20, 0], 2, { duration: 1.5 });
+// ── Community observations (produced by ml/04_analyze_photos.py) ──
+async function loadObservations() {
+  try {
+    const r = await fetch(`${BASE}data/observations.json`);
+    if (r.ok) observations = await r.json();
+    const p = await fetch(`${BASE}data/observation_places.json`);
+    if (p.ok) photoPlaces = (await p.json()).photos || {};
+  } catch { /* no photos yet */ }
+  renderObservations();
+  addPhotoMarkers();
+}
+
+// Where a photo is shown: its illustrative Nineveh place if there is one, else the real spot
+function photoPlace(o) {
+  const p = photoPlaces[o.thumb];
+  return p ? { ...p, illustrative: true } : { place: o.site, place_ar: o.site_ar, lat: o.lat, lon: o.lon, notes: o.notes, notes_ar: o.notes_ar, model_sqm: o.model_sqm, illustrative: false };
+}
+
+function checkPhotoPlace(o) {
+  const p = photoPlace(o);
+  predictPlace({ key: 'custom', lat: p.lat, lon: p.lon, alt: p.elevation_m ?? 300, nameEn: p.place, nameAr: p.place_ar || p.place });
+  map?.flyTo([p.lat, p.lon], 11, { duration: 0.8, animate: !REDUCED_MOTION });
+  $('app').scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth' });
+}
+
+function addPhotoMarkers() {
+  if (!map || !observations.length) return;
+  photoMarkers.splice(0).forEach(m => map.removeLayer(m));
+  observations.forEach(o => {
+    const p = photoPlace(o);
+    const m = L.marker([p.lat, p.lon], {
+      icon: L.divIcon({ className: '', html: '<div class="photo-pin" aria-hidden="true">📷</div>', iconSize: [26, 26], iconAnchor: [13, 13] }),
+      title: p.place
+    });
+    if ($('photo-toggle').checked) m.addTo(map);
+    m.bindPopup(() => {
+      const ar = getLang() === 'ar';
+      return `<div class="photo-pop"><img src="${BASE}${o.thumb}" alt="" width="180" />
+        <strong>${(ar && p.place_ar) || p.place}</strong>${p.illustrative ? `<span class="tag">📍 ${t('obsIllustrative')}</span>` : ''}
+        <span>${(ar && p.notes_ar) || p.notes || ''}</span></div>`;
+    });
+    photoMarkers.push(m);
   });
 }
 
-function flyTo(siteKey) {
-  if (window._mapMarkers && window._mapMarkers[siteKey]) {
-    map.flyTo(window._mapMarkers[siteKey].getLatLng(), 11, { duration: 1.0 });
-    window._mapMarkers[siteKey].openPopup();
+function renderObservations() {
+  const box = $('obs-gallery');
+  if (!observations.length) {
+    box.innerHTML = `<p class="empty">${t('obsEmpty')}</p>`;
+    return;
   }
+  const sorted = [...observations].sort((a, b) => (a.kind === 'telescope') - (b.kind === 'telescope'));
+  const note = $('obs-note');
+  if (note) note.hidden = !Object.keys(photoPlaces).length;
+  box.innerHTML = sorted.map(o => {
+    const when = o.local_datetime ? new Date(o.local_datetime.replace(' ', 'T')) : null;
+    const ar = getLang() === 'ar';
+    const p = photoPlace(o);
+    const site = (ar && p.place_ar) || p.place || '';
+    const notes = (ar && p.notes_ar) || p.notes || '';
+    const sqm = p.model_sqm ?? o.model_sqm;
+    const b = bortleFromSqm(sqm);
+    const moonUp = (o.moon_alt ?? -1) > 0;
+    const tag = o.kind === 'telescope' ? t('obsTelescope')
+      : moonUp ? `🌙 ${t('obsMoonUp')} ${Math.round(o.moon_illum * 100)}%` : t('obsMoonDown');
+    return `
+    <figure class="obs">
+      <div class="obs-media"><img src="${BASE}${o.thumb}" alt="${notes || site}" loading="lazy" />${p.illustrative ? `<span class="tag tag-img">📍 ${t('obsIllustrative')}</span>` : ''}</div>
+      <figcaption>
+        <span class="o-site">${site}</span>
+        ${notes ? `<span class="o-note">${notes}</span>` : ''}
+        <div class="o-meta">
+          <span>${when ? when.toLocaleString(locale(), { dateStyle: 'medium', timeStyle: 'short' }) : ''}</span>
+          <span class="tag">${tag}</span>
+        </div>
+        <div class="o-meta"><span>${t('obsModel')}</span><span class="o-pred">${ltr(`${fmt(sqm)} · B${b}`)}</span></div>
+        <button type="button" class="link-btn o-check" data-thumb="${o.thumb}">${t('obsCheck')}</button>
+      </figcaption>
+    </figure>`;
+  }).join('');
 }
-
-// ── Scroll Reveal ──
-function initScrollReveal() {
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-      }
-    });
-  }, { threshold: 0.12 });
-
-  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-}
-
-// ── Helper ──
-function setText(id, val) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = val;
-}
-

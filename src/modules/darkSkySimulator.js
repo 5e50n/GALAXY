@@ -1,106 +1,79 @@
-// DarkSky Responsible Lighting "What-If" Policy Simulator
-// Implements the 5 DarkSky International principles with strict physical and mathematical bounds
+// DarkSky "What-If" simulator — DarkSky International's 5 lighting principles.
+// Each policy reduces the artificial light that reaches the sky by a factor;
+// the reduced light is fed back into the trained ORBIT AI model, so the
+// predicted sky comes from the model, not from a hand-made formula.
+//
+// Light-reduction coefficients are stated assumptions (shown on the page):
+//   non-essential lights : decorative/facade/ad lighting ≈ 20 % of city light
+//   full-cutoff shielding: removes direct up-light ≈ 35 % of skyglow at 100 % retrofit
+//   dimming              : light scales 1:1 with dimming (max 50 %)
+//   midnight curfew      : commercial lighting ≈ 15 % of light after midnight
+//   2200 K amber LEDs    : ≈ 30 % less skyglow than 5000 K (less Rayleigh scatter of blue)
+
+import { nelmFromSqm, visibleStars } from './skyMath.js';
+
+export const ASSUMPTIONS = {
+  decorativeShare: 0.20,
+  shieldingCut: 0.35,
+  curfewShare: 0.15,
+  warmCut: 0.30
+};
+
+const CITY_LIGHTING = {
+  fixtures: 64000,     // estimated public luminaires in Greater Mosul
+  watts: 120,
+  hoursPerNight: 11,
+  usdPerKwh: 0.082
+};
 
 export class DarkSkySimulator {
-  constructor(esp32Station) {
-    this.esp32Station = esp32Station;
-
-    // Simulation Levers State
-    this.state = {
-      useful: 30,      // % of unnecessary architectural/ornamental lights shut off
-      targeted: 60,    // % of streetlights retrofitted with full-cutoff down-shielding
-      dimming: 35,     // % dimming of municipal streetlights (0% to 50%)
-      curfew: true,    // Automatic 12:00 AM shutoff / curfew for commercial boards
-      warmColor: true  // Replace cool blue (5000K) with warm amber (2200K) LEDs
-    };
-
-    // Nineveh / Mosul municipal lighting assumptions
-    this.cityLightingModel = {
-      totalFixtures: 64000,       // Estimated street and public luminaires in Greater Mosul
-      avgFixtureWatts: 120,       // Watts per fixture
-      nightlyBurnHours: 11,       // Hours lit per night
-      kwhCostUSD: 0.082           // USD per kWh
-    };
+  constructor() {
+    this.state = { useful: 30, targeted: 60, dimming: 35, curfew: true, warmColor: true };
   }
 
-  // Set individual simulation parameter
   setParam(key, val) {
-    if (this.state[key] !== undefined) {
-      this.state[key] = val;
-    }
+    if (key in this.state) this.state[key] = val;
   }
 
-  // Compute the realistic physical sky improvement and energy savings
-  calculateImpact(baseMag) {
+  lightFactor() {
     const { useful, targeted, dimming, curfew, warmColor } = this.state;
+    const a = ASSUMPTIONS;
+    return (1 - a.decorativeShare * useful / 100) *
+      (1 - a.shieldingCut * targeted / 100) *
+      (1 - Math.min(50, dimming) / 100) *
+      (curfew ? 1 - a.curfewShare : 1) *
+      (warmColor ? 1 - a.warmCut : 1);
+  }
 
-    // 1. Useful lighting reduction (non-essential lights off):
-    // Max effect on skyglow: up to +0.60 mag/arcsec^2
-    const deltaUseful = (useful / 100.0) * 0.60;
+  // model: SkyModel, inputs: SkyModel.buildInputs() result for the site
+  calculateImpact(model, inputs) {
+    const factor = this.lightFactor();
+    const baseMag = model.predictWithLightFactor(inputs, 1);
+    const simulatedMag = model.predictWithLightFactor(inputs, factor);
+    const baseNELM = nelmFromSqm(baseMag);
+    const newNELM = nelmFromSqm(simulatedMag);
+    const starsBefore = visibleStars(baseNELM);
+    const starsAfter = visibleStars(newNELM);
 
-    // 2. Targeted shielding (stopping horizontal and upward spill):
-    // Full cutoff shielding eliminates upward waste light: up to +0.80 mag/arcsec^2
-    const deltaTargeted = (targeted / 100.0) * 0.80;
-
-    // 3. Low-Level Dimming:
-    // We scale linearly by dimming percentage (0% to 50% -> 0 to 1.10)
-    const deltaDimming = (Math.min(50, dimming) / 50.0) * 1.10;
-
-    // 4. Curfew control (post-midnight commercial shutdown):
-    // Shutting off digital billboards and facade lighting: +0.45 mag/arcsec^2
-    const deltaCurfew = curfew ? 0.45 : 0.0;
-
-    // 5. Warm Color shift (reducing 450nm Rayleigh scattering):
-    // Blue light at 450nm scatters ~2.9x more than warm 589nm light.
-    // Switching to 2200K warm CCT cuts scattering skyglow dome: +0.65 mag/arcsec^2
-    const deltaWarm = warmColor ? 0.65 : 0.0;
-
-    // Total Sky Brightness Gain (in mag/arcsec^2 - remember higher is darker!)
-    // Remove dampener and allow a much stronger mathematical gain to show a dramatic visual impact
-    let totalGain = (deltaUseful + deltaTargeted + deltaDimming + deltaCurfew + deltaWarm);
-    // Allow up to 4.5 magnitudes of improvement for a massive "Wow" factor
-    totalGain = parseFloat(Math.min(4.5, totalGain).toFixed(2));
-
-    const simulatedMag = parseFloat(Math.min(22.0, baseMag + totalGain).toFixed(2));
-
-    // Calculate baseline and new NELM using Unihedron formula
-    const baseNELM = this.esp32Station.calculateNELM(baseMag);
-    const newNELM = this.esp32Station.calculateNELM(simulatedMag);
-    const nelmGain = parseFloat((newNELM - baseNELM).toFixed(2));
-
-    // Estimate additional visible stars
-    // Star counts scale exponentially with limiting magnitude:
-    // N_stars ~ 10^(0.6 * NELM - 1.2) approx for whole sky
-    const starsBefore = Math.round(Math.pow(10, 0.6 * baseNELM - 1.2));
-    const starsAfter = Math.round(Math.pow(10, 0.6 * newNELM - 1.2));
-    const additionalStars = Math.max(0, starsAfter - starsBefore);
-
-    // Energy & Financial Savings Calculation
-    // Total baseline kWh per year = (fixtures * watts * hours * 365) / 1000
-    const annualBaseKWh = (this.cityLightingModel.totalFixtures * this.cityLightingModel.avgFixtureWatts * this.cityLightingModel.nightlyBurnHours * 365) / 1000;
-    
-    // Total reduction percentage = dimming savings + curfew hours + eliminated fixtures
-    const dimmingSavings = (dimming / 100) * 0.7; // dimming for most of the night
-    const curfewSavings = curfew ? (4.0 / this.cityLightingModel.nightlyBurnHours) * 0.3 : 0.0; // 4 hours late night
-    const usefulSavings = (useful / 100) * 0.15;
-    const totalEnergyReductionPct = Math.min(0.65, dimmingSavings + curfewSavings + usefulSavings);
-
-    const savedKWhAnnual = Math.round(annualBaseKWh * totalEnergyReductionPct);
-    const savedUSDAnnual = Math.round(savedKWhAnnual * this.cityLightingModel.kwhCostUSD);
+    const { useful, dimming, curfew } = this.state;
+    const energyPct = Math.min(0.65,
+      (dimming / 100) * 0.7 + (curfew ? (4 / CITY_LIGHTING.hoursPerNight) * 0.3 : 0) + (useful / 100) * 0.15);
+    const annualKWh = CITY_LIGHTING.fixtures * CITY_LIGHTING.watts * CITY_LIGHTING.hoursPerNight * 365 / 1000;
+    const savedKWh = Math.round(annualKWh * energyPct);
 
     return {
+      lightFactor: factor,
       baseMag,
       simulatedMag,
-      totalGain,
+      totalGain: simulatedMag - baseMag,
       baseNELM,
       newNELM,
-      nelmGain,
       starsBefore,
       starsAfter,
-      additionalStars,
-      energyReductionPct: Math.round(totalEnergyReductionPct * 100),
-      savedKWhAnnual,
-      savedUSDAnnual
+      additionalStars: Math.max(0, starsAfter - starsBefore),
+      energyReductionPct: Math.round(energyPct * 100),
+      savedKWhAnnual: savedKWh,
+      savedUSDAnnual: Math.round(savedKWh * CITY_LIGHTING.usdPerKwh)
     };
   }
 }

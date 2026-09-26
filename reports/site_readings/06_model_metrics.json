@@ -1,0 +1,166 @@
+{
+  "generated_utc": "2026-09-26T06:29:02.551Z",
+  "v1": {
+    "metrics": {
+      "model": "orbit_ai",
+      "training_rows": 5754,
+      "unique_locations": 2813,
+      "physics_constraints": {
+        "log_light_point": -1,
+        "log_light_10km": -1,
+        "log_light_10_50km": -1,
+        "log_light_50_160km": -1,
+        "log_skyglow": -1,
+        "moon_light": -1,
+        "elevation_km": 1
+      },
+      "validation": "5-fold GroupKFold by 0.5° geographic cell (tested on unseen areas)",
+      "cv": {
+        "satellite_only": {
+          "MAE": 0.814,
+          "RMSE": 1.085,
+          "R2": 0.476
+        },
+        "random_forest": {
+          "MAE": 0.621,
+          "RMSE": 0.892,
+          "R2": 0.646
+        },
+        "orbit_ai": {
+          "MAE": 0.605,
+          "RMSE": 0.911,
+          "R2": 0.63
+        }
+      },
+      "improvement_percent": 25.7,
+      "within_half_mag_pct": 61.6,
+      "median_error": 0.352,
+      "regional_check": {
+        "rows": 380,
+        "countries": [
+          "Bahrain",
+          "Egypt",
+          "Iran",
+          "Iraq",
+          "Israel",
+          "Jordan",
+          "Kuwait",
+          "Lebanon",
+          "Oman",
+          "Qatar",
+          "Saudi Arabia",
+          "Turkey",
+          "United Arab Emirates"
+        ],
+        "reported_naked_eye_limit_mean": 2.76,
+        "model_naked_eye_limit_mean": 4.15,
+        "spearman": 0.261,
+        "note": "Observers in the region see fewer stars than a model trained mostly on USA/Europe predicts -> local haze/dust; motivates local photo calibration."
+      },
+      "data_sources": {
+        "target": "Globe at Night SQM readings 2019-2025 (NOIRLab), mag/arcsec²",
+        "satellite": "NASA GIBS VIIRS_Black_Marble 2016 (Suomi-NPP VIIRS DNB), linear light index 0-1",
+        "astronomy": "Sun/Moon ephemeris (SunCalc algorithm)"
+      },
+      "limits": [
+        "Valid for SQM 16-22.3 mag/arcsec²; night-time only (sun below -12°).",
+        "VIIRS index is a visual-product proxy, not calibrated radiance; 2016 composite.",
+        "Training data is mostly USA/Europe; Middle East checked separately with naked-eye reports.",
+        "Dust (AOD) not yet a feature — photos from Iraq are used to measure the local offset."
+      ]
+    },
+    "importances": {
+      "log_light_point": 0.2773,
+      "log_light_10km": 0.1011,
+      "log_light_10_50km": 0.0453,
+      "log_light_50_160km": 0.0139,
+      "log_skyglow": 0.22,
+      "elevation_km": 0.0225,
+      "moon_illum": 0.0261,
+      "moon_alt": 0.0112,
+      "moon_light": 0.0597,
+      "cloud": 0.0457,
+      "sun_alt": 0.0245,
+      "solar_hour": 0.0576,
+      "abs_lat": 0.0808,
+      "season": 0.0142
+    },
+    "residual_std": 0.906
+  },
+  "v2": {
+    "metrics": {
+      "model": "orbit_ai_v2",
+      "version": 2,
+      "training_rows": 4666,
+      "unique_locations": 2210,
+      "validation": "5-fold GroupKFold by 0.5° geographic cell (tested on unseen areas)",
+      "cv": {
+        "satellite_only": {
+          "MAE": 0.701,
+          "RMSE": 0.94,
+          "R2": 0.584
+        },
+        "orbit_ai_v2": {
+          "MAE": 0.542,
+          "RMSE": 0.831,
+          "R2": 0.675
+        },
+        "orbit_ai_v1_same_rows": {
+          "MAE": 0.556,
+          "RMSE": 0.849,
+          "R2": 0.661
+        }
+      },
+      "improvement_percent": 22.7,
+      "improvement_vs_v1_percent": 2.5,
+      "within_half_mag_pct": 65.9,
+      "mae_by_bortle": {
+        "satellite_only_2016": {
+          "B1-3": 0.861,
+          "B4-5": 0.651,
+          "B6": 0.412,
+          "B7-9": 1.587
+        },
+        "satellite_only_2024": {
+          "B1-3": 0.764,
+          "B4-5": 0.585,
+          "B6": 0.48,
+          "B7-9": 1.421
+        },
+        "v1_gibs_2016": {
+          "B1-3": 0.54,
+          "B4-5": 0.365,
+          "B6": 0.548,
+          "B7-9": 1.364
+        },
+        "v2_blackmarble_2024": {
+          "B1-3": 0.486,
+          "B4-5": 0.368,
+          "B6": 0.516,
+          "B7-9": 1.339
+        }
+      },
+      "data_sources": {
+        "target": "Globe at Night SQM 2019-2025",
+        "satellite": "NASA Black Marble VNP46A4 2024 (AllAngle_Composite_Snow_Free, nW/cm²/sr)"
+      }
+    },
+    "importances": {
+      "log_rad_point": 0.2892,
+      "log_rad_10km": 0.0734,
+      "log_rad_10_50km": 0.0324,
+      "log_rad_50_160km": 0.0101,
+      "log_rad_skyglow": 0.2898,
+      "elevation_km": 0.0152,
+      "moon_illum": 0.0275,
+      "moon_alt": 0.0138,
+      "moon_light": 0.0564,
+      "cloud": 0.047,
+      "sun_alt": 0.0264,
+      "solar_hour": 0.0548,
+      "abs_lat": 0.052,
+      "season": 0.012
+    },
+    "residual_std": 0.827
+  }
+}

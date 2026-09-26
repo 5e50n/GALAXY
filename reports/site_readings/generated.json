@@ -1,0 +1,11 @@
+{
+  "generated_utc": "2026-09-26T06:29:02.551Z",
+  "source": "http://localhost:5173/ORBIT/",
+  "rows": {
+    "sites": 13,
+    "grid": 1443,
+    "targets": 149,
+    "planets": 468,
+    "scenarios": 13
+  }
+}

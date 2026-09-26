@@ -1,0 +1,10 @@
+{
+  "zero_point": null,
+  "mode": "none (no photo has exposure settings)",
+  "photos": 9,
+  "by_source": {
+    "stripped": 9
+  },
+  "mean_delta": 0.0,
+  "note": "weighted mean of photo_sqm - model_sqm over local photos (only with absolute calibration)"
+}

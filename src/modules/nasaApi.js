@@ -1,125 +1,68 @@
-// NASA Satellite & Earth Data Pipeline
-// Connects NASA GIBS (Global Imagery Browse Services), Black Marble (VNP46A2/A3), and Atmospheric Feeds
+// NASA map layers + known false-positive light sources.
 
-export class NasaDataService {
-  constructor() {
-    // NASA GIBS WMTS Endpoint Templates (Free & Public)
-    this.gibsLayers = {
-      blackMarble: {
-        id: 'VIIRS_Black_Marble',
-        name: 'NASA Black Marble Nighttime Lights',
-        url: 'https://map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png',
-        attribution: 'NASA Earthdata / GIBS Black Marble',
-        maxNativeZoom: 8,
-        maxZoom: 19
-      },
-      nightLights: {
-        id: 'VIIRS_SNPP_Nighttime',
-        name: 'VIIRS City Lights 2012',
-        url: 'https://map1.vis.earthdata.nasa.gov/wmts-webmerc/VIIRS_CityLights_2012/default/2012-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpg',
-        attribution: 'NASA EOSDIS GIBS',
-        maxNativeZoom: 8,
-        maxZoom: 19
-      },
-      blueMarble: {
-        id: 'BlueMarble_NextGeneration',
-        name: 'Blue Marble (Daytime Baseline)',
-        url: 'https://map1.vis.earthdata.nasa.gov/wmts-webmerc/BlueMarble_NextGeneration/default/2004-08/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpg',
-        attribution: 'NASA Worldview / Blue Marble',
-        maxNativeZoom: 8,
-        maxZoom: 19
-      }
-    };
+export const GIBS_BLACK_MARBLE = {
+  url: 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png',
+  attribution: 'NASA GIBS · VIIRS Black Marble',
+  maxNativeZoom: 8,
+  maxZoom: 19
+};
 
-    // South Nineveh Petroleum Gas Flare Coordinates (Qayyarah / Najmah)
-    // Critical scientific innovation: Must be masked to avoid fake "city" false positives!
-    this.gasFlareFields = [
-      {
-        id: 'qayyarah_main',
-        nameEn: 'Qayyarah Oil Field & Refinery Flares',
-        nameAr: 'حقل ومصفى القيارة النفطي (شعلات الغاز)',
-        lat: 35.8010,
-        lon: 43.2720,
-        radiusMeters: 9000,
-        fakeRadiance: 168.0 // High fake radiance
-      },
-      {
-        id: 'najmah_field',
-        nameEn: 'Najmah Oil Gas Flaring Zone',
-        nameAr: 'حقل النجمة (انبعاثات الغاز المصاحب)',
-        lat: 35.9120,
-        lon: 43.1480,
-        radiusMeters: 6500,
-        fakeRadiance: 94.0
-      }
-    ];
+// Oil-field gas flares in south Nineveh look like "cities" to VIIRS.
+// They are industrial flames, not municipal lighting, so they are flagged on the map.
+export const GAS_FLARES = [
+  { nameEn: 'Qayyarah oil field flares', nameAr: 'شعلات حقل القيارة', lat: 35.801, lon: 43.272, radiusM: 9000 },
+  { nameEn: 'Najmah oil field flares', nameAr: 'شعلات حقل النجمة', lat: 35.912, lon: 43.148, radiusM: 6500 }
+];
 
-    // Historical comparison profiles (Mosul Reconstruction 2016 vs 2026)
-    this.historicalProfiles = {
-      2016: {
-        year: 2016,
-        descriptionEn: 'Post-conflict recovery phase: sparse sodium streetlamps, rolling blackouts, subdued commercial lighting.',
-        descriptionAr: 'مرحلة ما بعد العمليات: إنارة صوديوم متفرقة، انقطاعات كهربائية، غياب شبه تام للوحات الإعلانية.',
-        cityAverageRadiance: 12.4, // nW/cm^2/sr
-        skyDarknessEstimate: 18.90, // mag/arcsec^2
-        ledMarketPenetration: '8%'
-      },
-      2026: {
-        year: 2026,
-        descriptionEn: 'Modern reconstruction: widespread conversion to unshielded 5000K White LEDs, dynamic high-luminance digital billboards.',
-        descriptionAr: 'طفرة الإعمار: استبدال شامل بمصابيح LED بيضاء غير موجهة، شاشات دعاية عملاقة، وزيادة التشتت الأفقي.',
-        cityAverageRadiance: 42.5, // nW/cm^2/sr
-        skyDarknessEstimate: 17.30, // mag/arcsec^2 (brightening!)
-        ledMarketPenetration: '91%'
-      }
-    };
+export function haversineKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
 
-    // Real-time environmental states (CAMS Dust AOD & Astropy Moon calculator)
-    this.environment = {
-      dustAOD: 0.28, // CAMS Dust AOD at 550nm (clean clear night)
-      aodStatus: 'Low Dust / Good Transmittance',
-      moonPhase: 0.12, // Waxing Crescent (12% illumination)
-      moonAltitude: -14.2, // Below horizon (Pristine measuring condition)
-      cloudCover: 0.05, // 5% (passes quality check)
-      qualityMask: 'EXCELLENT (Pass)'
-    };
+export function gasFlareAt(lat, lon) {
+  return GAS_FLARES.find(f => haversineKm(lat, lon, f.lat, f.lon) <= f.radiusM / 1000) || null;
+}
+
+// Elevation for any clicked point (Open-Meteo, free, no key)
+export async function fetchElevation(lat, lon) {
+  try {
+    const r = await fetch(`https://api.open-meteo.com/v1/elevation?latitude=${lat}&longitude=${lon}`);
+    const j = await r.json();
+    return j.elevation?.[0] ?? 300;
+  } catch {
+    return 300;
   }
+}
 
-  // Get active GIBS layer definition
-  getGibsLayer(layerKey) {
-    return this.gibsLayers[layerKey] || this.gibsLayers.blackMarble;
+// Hourly cloud-cover forecast (Open-Meteo), cached 30 min per place
+const cloudCache = new Map();
+export async function fetchCloudForecast(lat, lon) {
+  const key = `${lat.toFixed(2)},${lon.toFixed(2)}`;
+  const hit = cloudCache.get(key);
+  if (hit && Date.now() - hit.at < 30 * 60000) return hit.data;
+  try {
+    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=cloud_cover&past_days=1&forecast_days=2&timezone=UTC`);
+    const j = await r.json();
+    const data = { time: j.hourly.time, cloud: j.hourly.cloud_cover };
+    cloudCache.set(key, { at: Date.now(), data });
+    return data;
+  } catch {
+    return null;
   }
+}
 
-  // Check if given coordinate is inside the petroleum flare zone
-  isInsideGasFlareZone(lat, lon) {
-    for (let flare of this.gasFlareFields) {
-      const dist = this.haversineDistanceKm(lat, lon, flare.lat, flare.lon);
-      if (dist <= (flare.radiusMeters / 1000)) {
-        return { isFlare: true, flareInfo: flare };
-      }
-    }
-    return { isFlare: false, flareInfo: null };
-  }
+/** Cloud fraction (0..1) at a given time from a forecast, or null. */
+export function cloudAt(forecast, date) {
+  if (!forecast) return null;
+  const i = forecast.time.findIndex(t => t.startsWith(date.toISOString().slice(0, 13)));
+  return i >= 0 && forecast.cloud[i] != null ? forecast.cloud[i] / 100 : null;
+}
 
-  // Convert NASA VIIRS upward radiance (nW/cm^2/sr) to approximate zenith sky brightness (mag/arcsec^2)
-  // using empirical satellite-to-ground conversion baseline
-  satelliteRadianceToSkyBrightness(radiance) {
-    if (radiance <= 0.05) return 22.0; // Dark sky limit
-    // Empirical logarithmic relation: B_sat = 21.8 - 2.5 * log10(1 + radiance * 0.45)
-    const bSat = 21.8 - 2.5 * Math.log10(1.0 + radiance * 0.45);
-    return parseFloat(Math.max(16.5, Math.min(22.0, bSat)).toFixed(2));
-  }
-
-  // Haversine distance utility
-  haversineDistanceKm(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Earth radius in km
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return parseFloat((R * c).toFixed(2));
-  }
+// Cloud cover at one time (kept for the export tool)
+export async function fetchCloudCover(lat, lon, date) {
+  return cloudAt(await fetchCloudForecast(lat, lon), date);
 }

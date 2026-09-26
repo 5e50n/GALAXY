@@ -2,3 +2,9 @@ node_modules
 dist
 .env
 .DS_Store
+
+# ML: large / re-downloadable data
+ml/data/raw/
+ml/data/cache/
+__pycache__/
+ml/data/blackmarble/

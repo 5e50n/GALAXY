@@ -1,0 +1,68 @@
+{
+  "model": "orbit_ai",
+  "training_rows": 5754,
+  "unique_locations": 2813,
+  "physics_constraints": {
+    "log_light_point": -1,
+    "log_light_10km": -1,
+    "log_light_10_50km": -1,
+    "log_light_50_160km": -1,
+    "log_skyglow": -1,
+    "moon_light": -1,
+    "elevation_km": 1
+  },
+  "validation": "5-fold GroupKFold by 0.5\u00b0 geographic cell (tested on unseen areas)",
+  "cv": {
+    "satellite_only": {
+      "MAE": 0.814,
+      "RMSE": 1.085,
+      "R2": 0.476
+    },
+    "random_forest": {
+      "MAE": 0.621,
+      "RMSE": 0.892,
+      "R2": 0.646
+    },
+    "orbit_ai": {
+      "MAE": 0.605,
+      "RMSE": 0.911,
+      "R2": 0.63
+    }
+  },
+  "improvement_percent": 25.7,
+  "within_half_mag_pct": 61.6,
+  "median_error": 0.352,
+  "regional_check": {
+    "rows": 380,
+    "countries": [
+      "Bahrain",
+      "Egypt",
+      "Iran",
+      "Iraq",
+      "Israel",
+      "Jordan",
+      "Kuwait",
+      "Lebanon",
+      "Oman",
+      "Qatar",
+      "Saudi Arabia",
+      "Turkey",
+      "United Arab Emirates"
+    ],
+    "reported_naked_eye_limit_mean": 2.76,
+    "model_naked_eye_limit_mean": 4.15,
+    "spearman": 0.261,
+    "note": "Observers in the region see fewer stars than a model trained mostly on USA/Europe predicts -> local haze/dust; motivates local photo calibration."
+  },
+  "data_sources": {
+    "target": "Globe at Night SQM readings 2019-2025 (NOIRLab), mag/arcsec\u00b2",
+    "satellite": "NASA GIBS VIIRS_Black_Marble 2016 (Suomi-NPP VIIRS DNB), linear light index 0-1",
+    "astronomy": "Sun/Moon ephemeris (SunCalc algorithm)"
+  },
+  "limits": [
+    "Valid for SQM 16-22.3 mag/arcsec\u00b2; night-time only (sun below -12\u00b0).",
+    "VIIRS index is a visual-product proxy, not calibrated radiance; 2016 composite.",
+    "Training data is mostly USA/Europe; Middle East checked separately with naked-eye reports.",
+    "Dust (AOD) not yet a feature \u2014 photos from Iraq are used to measure the local offset."
+  ]
+}

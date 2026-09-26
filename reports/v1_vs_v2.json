@@ -1,0 +1,75 @@
+{
+  "rows": 4666,
+  "cv": {
+    "satellite_only_2016": {
+      "MAE": 0.76,
+      "RMSE": 0.998,
+      "R2": 0.532
+    },
+    "satellite_only_2024": {
+      "MAE": 0.701,
+      "RMSE": 0.94,
+      "R2": 0.584
+    },
+    "v1_gibs_2016": {
+      "MAE": 0.556,
+      "RMSE": 0.849,
+      "R2": 0.661
+    },
+    "v2_blackmarble_2024": {
+      "MAE": 0.542,
+      "RMSE": 0.831,
+      "R2": 0.675
+    }
+  },
+  "mae_by_bortle": {
+    "satellite_only_2016": {
+      "B1-3": 0.861,
+      "B4-5": 0.651,
+      "B6": 0.412,
+      "B7-9": 1.587
+    },
+    "satellite_only_2024": {
+      "B1-3": 0.764,
+      "B4-5": 0.585,
+      "B6": 0.48,
+      "B7-9": 1.421
+    },
+    "v1_gibs_2016": {
+      "B1-3": 0.54,
+      "B4-5": 0.365,
+      "B6": 0.548,
+      "B7-9": 1.364
+    },
+    "v2_blackmarble_2024": {
+      "B1-3": 0.486,
+      "B4-5": 0.368,
+      "B6": 0.516,
+      "B7-9": 1.339
+    }
+  },
+  "within_half_mag_pct": {
+    "satellite_only_2016": 42.9,
+    "satellite_only_2024": 47.7,
+    "v1_gibs_2016": 65.1,
+    "v2_blackmarble_2024": 65.9
+  },
+  "regional_middle_east": {
+    "rows": 234,
+    "reported_nelm_mean": 2.52,
+    "v1": {
+      "model_nelm_mean": 4.2,
+      "nelm_MAE": 1.92,
+      "spearman": 0.201
+    },
+    "v2": {
+      "model_nelm_mean": 3.96,
+      "nelm_MAE": 1.72,
+      "spearman": 0.376
+    }
+  },
+  "combined_v1_plus_v2_test": {
+    "MAE": 0.532,
+    "note": "slightly better but needs both sources in the browser; not adopted"
+  }
+}

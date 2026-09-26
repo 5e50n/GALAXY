@@ -1,7 +1,8 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/ORBIT/',
+  // GitHub Pages serves under /ORBIT/; Netlify serves at / (set BASE_PATH=/ in netlify.toml)
+  base: process.env.BASE_PATH || '/ORBIT/',
   root: './',
   server: {
     port: 3000,

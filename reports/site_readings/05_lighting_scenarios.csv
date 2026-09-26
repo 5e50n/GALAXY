@@ -1,0 +1,14 @@
+﻿site_key,now_sqm,default_policy_light_factor,after_default_policy_sqm,gain_mag,extra_stars,all_lights_off_sqm,cut_for_bortle6_pct,cut_for_bortle5_pct,cut_for_bortle4_pct,cut_for_bortle3_pct
+mosulCenter,17.6,0.287,18.72,1.12,316,21.38,57,86,97,100
+baashiqa,18.32,0.287,19.64,1.32,729,21.47,0,53,92,100
+badush,19.87,0.287,20.83,0.96,1272,21.48,0,0,33,99
+hatra,19.83,0.287,21.01,1.18,1628,21.49,0,0,64,95
+sinjar,20.63,0.287,21.23,0.61,1072,21.52,0,0,0,94
+baghdadCenter,17.49,0.287,17.78,0.29,50,21.31,86,94,99,unreachable
+basraCenter,17.5,0.287,17.82,0.33,58,21.28,84,95,99,unreachable
+erbilCenter,17.83,0.287,18.77,0.94,299,21.38,20,82,96,100
+najafCenter,17.63,0.287,18.05,0.42,88,21.33,70,95,99,unreachable
+sulaymaniyahCenter,17.9,0.287,18.49,0.59,169,21.46,38,79,97,100
+kirkukCenter,17.76,0.287,18.34,0.58,147,21.35,50,89,97,unreachable
+ramadiCenter,17.65,0.287,17.98,0.33,68,21.33,74,91,98,unreachable
+rutba,21.48,0.287,21.48,0,0,21.48,0,0,0,0
