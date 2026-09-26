@@ -1,0 +1,21 @@
+{
+  "name": "orbit-galaxy-darksky",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.3",
+    "leaflet": "^1.9.4",
+    "lenis": "^1.3.26",
+    "satellite.js": "^7.1.0",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0"
+  }
+}
